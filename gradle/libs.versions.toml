@@ -22,7 +22,7 @@ androidx-appcompat = "1.7.1"
 okio = "3.10.2"
 essenty = "2.5.0"
 detekt = "1.23.8"
-detekt-compose = "0.4.22"
+detekt-compose = "0.4.27"
 kover = "0.9.1"
 
 [libraries]
