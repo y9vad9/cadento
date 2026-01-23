@@ -1,8 +1,8 @@
 [versions]
-kotlin = "2.2.0"
+kotlin = "2.3.0"
 kotlinx-coroutines = "1.10.2"
-kotlinx-serialization = "1.8.1"
-ktor = "3.2.0"
+kotlinx-serialization = "1.10.0"
+ktor = "3.4.0"
 android-gradle-plugin = "8.9.1"
 android-compose-version = "1.7.1"
 compose = "1.8.2"
@@ -11,19 +11,19 @@ sqldelight = "2.1.0"
 clikt = "5.0.3"
 graalvm = "0.10.6"
 mordant = "3.0.2"
-flowmvi = "3.2.0-alpha05"
-koin = "4.1.0"
+flowmvi = "3.2.1"
+koin = "4.1.1"
 koin-annotations = "2.1.0"
-ksp = "2.2.0-2.0.2"
-decompose = "3.3.0"
-kotlinx-datetime = "0.7.0"
-compose-markdown = "0.35.0"
+ksp = "2.3.4"
+decompose = "3.4.0"
+kotlinx-datetime = "0.7.1"
+compose-markdown = "0.39.0"
 androidx-appcompat = "1.7.1"
-okio = "3.10.2"
+okio = "3.16.2"
 essenty = "2.5.0"
 detekt = "1.23.8"
 detekt-compose = "0.4.22"
-kover = "0.9.1"
+kover = "0.9.4"
 
 [libraries]
 # ───────────────────────────────────────────────────────────────────────────────
@@ -58,8 +58,8 @@ sqldelight-android-driver = { module = "app.cash.sqldelight:android-driver", ver
 sqldelight-native-driver = { module = "app.cash.sqldelight:native-driver", version.ref = "sqldelight" }
 sqldelight-runtime = { module = "app.cash.sqldelight:runtime", version.ref = "sqldelight" }
 sqldelight-coroutines = { module = "app.cash.sqldelight:coroutines-extensions", version.ref = "sqldelight" }
-xerial-sqlite-jdbc = { module = "org.xerial:sqlite-jdbc", version.require = "3.49.1.0" }
-h2-database = { module = "com.h2database:h2", version.require = "2.2.224" }
+xerial-sqlite-jdbc = { module = "org.xerial:sqlite-jdbc", version.require = "3.51.1.0" }
+h2-database = { module = "com.h2database:h2", version.require = "2.4.240" }
 
 # ───────────────────────────────────────────────────────────────────────────────
 # Jetpack Compose
@@ -71,7 +71,7 @@ jetpack-compose-icons = { module = "androidx.compose.material:material-icons-cor
 jetpack-compose-extendedIcons = { module = "androidx.compose.material:material-icons-extended", version.ref = "android-compose-version" }
 jetpack-compose-activity = { module = "androidx.activity:activity-compose", version.require = "1.10.1" }
 jetpack-compose-viewmodel = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "android-compose-version" }
-jetpack-compose-material3WindowSizeClass = { module = "androidx.compose.material3:material3-window-size-class", version.require = "1.3.0" }
+jetpack-compose-material3WindowSizeClass = { module = "androidx.compose.material3:material3-window-size-class", version.require = "1.4.0" }
 compose-windowsize = { module = "org.jetbrains.compose.material3:material3-window-size-class", version.ref = "compose" }
 
 # ───────────────────────────────────────────────────────────────────────────────
