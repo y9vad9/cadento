@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# === Gradle tests ===
+echo "Running Gradle checks..."
+if ! ./gradlew check; then
+  echo
+  echo "❌ Gradle checks failed. Commit aborted."
+  exit 1
+fi
+echo "✅ Gradle checks passed."
