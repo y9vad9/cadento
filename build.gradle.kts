@@ -30,9 +30,6 @@ val installGitHooks by tasks.registering(Copy::class) {
         if (!srcDir.asFile.exists()) {
             logger.warn(".githooks directory not found — nothing to install.")
         }
-        if (!dstDir.asFile.exists()) {
-            dstDir.asFile.mkdirs()
-        }
     }
 
     doLast {
