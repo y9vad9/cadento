@@ -1,8 +1,5 @@
 package app.timemate.client.timers.domain.type.tag.value
 
-import com.y9vad9.ktiny.kotlidator.ValueFactory
-import com.y9vad9.ktiny.kotlidator.factory
-import com.y9vad9.ktiny.kotlidator.rule.StringLengthRangeValidationRule
 import kotlin.jvm.JvmInline
 
 @JvmInline
@@ -12,9 +9,30 @@ value class TimerTagName private constructor(
     companion object {
         val LENGTH_RANGE: IntRange = 1..50
 
-        val factory: ValueFactory<TimerTagName, String> = factory(
-            rules = listOf(StringLengthRangeValidationRule(LENGTH_RANGE)),
-            constructor = { TimerTagName(it) },
-        )
+        fun create(value: String): CreationResult {
+            return when {
+                value.length < LENGTH_RANGE.first -> CreationResult.Empty
+                value.length > LENGTH_RANGE.last -> CreationResult.TooLong
+                else -> CreationResult.Success(TimerTagName(value))
+            }
+        }
+
+        fun createOrThrow(value: String): TimerTagName {
+            return when (val result = create(value)) {
+                is CreationResult.Success ->
+                    result.timerTagName
+                is CreationResult.Empty ->
+                    throw IllegalArgumentException("Timer tag name cannot be empty.")
+                is CreationResult.TooLong ->
+                    throw IllegalArgumentException("Timer tag name cannot exceed ${LENGTH_RANGE.last} characters.")
+            }
+        }
+    }
+
+    sealed interface CreationResult {
+        @JvmInline
+        value class Success(val timerTagName: TimerTagName) : CreationResult
+        data object Empty : CreationResult
+        data object TooLong : CreationResult
     }
 }

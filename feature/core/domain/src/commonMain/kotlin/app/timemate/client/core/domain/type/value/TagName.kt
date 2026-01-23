@@ -1,8 +1,5 @@
 package app.timemate.client.core.domain.type.value
 
-import com.y9vad9.ktiny.kotlidator.ValueFactory
-import com.y9vad9.ktiny.kotlidator.factory
-import com.y9vad9.ktiny.kotlidator.rule.StringLengthRangeValidationRule
 import kotlin.jvm.JvmInline
 
 @JvmInline
@@ -15,9 +12,30 @@ value class TagName private constructor(
 
         val LENGTH_RANGE: IntRange = MIN_LENGTH..MAX_LENGTH
 
-        val factory: ValueFactory<TagName, String> = factory(
-            rules = listOf(StringLengthRangeValidationRule(LENGTH_RANGE)),
-            constructor = ::TagName,
-        )
+        fun create(value: String): CreationResult {
+            return when {
+                value.length < MIN_LENGTH -> CreationResult.Empty
+                value.length > MAX_LENGTH -> CreationResult.TooLong
+                else -> CreationResult.Success(TagName(value))
+            }
+        }
+
+        fun createOrThrow(value: String): TagName {
+            return when (val result = create(value)) {
+                is CreationResult.Success ->
+                    result.tagName
+                is CreationResult.Empty ->
+                    throw IllegalArgumentException("Tag name cannot be empty.")
+                is CreationResult.TooLong ->
+                    throw IllegalArgumentException("Tag name cannot exceed $MAX_LENGTH characters.")
+            }
+        }
+    }
+
+    sealed interface CreationResult {
+        @JvmInline
+        value class Success(val tagName: TagName) : CreationResult
+        data object Empty : CreationResult
+        data object TooLong : CreationResult
     }
 }

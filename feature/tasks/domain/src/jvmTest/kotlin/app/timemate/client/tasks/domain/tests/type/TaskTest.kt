@@ -5,7 +5,6 @@ import app.timemate.client.tasks.domain.type.TaskStatus
 import app.timemate.client.tasks.domain.type.value.TaskDescription
 import app.timemate.client.tasks.domain.type.value.TaskId
 import app.timemate.client.tasks.domain.type.value.TaskName
-import com.y9vad9.ktiny.kotlidator.createOrThrow
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
@@ -13,9 +12,9 @@ import kotlin.time.Instant
 
 class TaskTest {
 
-    private val baseId = TaskId.factory.createOrThrow(1L)
-    private val baseName = TaskName.factory.createOrThrow("Test Task")
-    private val baseDescription = TaskDescription.factory.createOrThrow("A description")
+    private val baseId = TaskId.createOrThrow(1L)
+    private val baseName = TaskName.createOrThrow("Test Task")
+    private val baseDescription = TaskDescription.createOrThrow("A description")
 
     private val creationTime = Instant.parse("2024-01-01T00:00:00Z")
     private val dueTime = Instant.parse("2024-01-02T00:00:00Z")

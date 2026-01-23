@@ -1,8 +1,5 @@
 package app.timemate.client.timers.domain.type.settings.value
 
-import com.y9vad9.ktiny.kotlidator.ValueFactory
-import com.y9vad9.ktiny.kotlidator.factory
-import com.y9vad9.ktiny.kotlidator.rule.MinValueValidationRule
 import kotlin.jvm.JvmInline
 
 @JvmInline
@@ -14,9 +11,27 @@ value class PomodoroLongBreakPerShortBreaksCount private constructor(
 
         val DEFAULT: PomodoroLongBreakPerShortBreaksCount = PomodoroLongBreakPerShortBreaksCount(4)
 
-        val factory: ValueFactory<PomodoroLongBreakPerShortBreaksCount, Int> = factory(
-            rules = listOf(MinValueValidationRule(MIN_VALUE)),
-            constructor = ::PomodoroLongBreakPerShortBreaksCount,
-        )
+        fun create(value: Int): CreationResult {
+            return if (value < MIN_VALUE) {
+                CreationResult.TooSmall
+            } else {
+                CreationResult.Success(PomodoroLongBreakPerShortBreaksCount(value))
+            }
+        }
+
+        fun createOrThrow(value: Int): PomodoroLongBreakPerShortBreaksCount {
+            return when (val result = create(value)) {
+                is CreationResult.Success -> result.count
+                is CreationResult.TooSmall ->
+                    throw IllegalArgumentException("Pomodoro long break per short breaks count must be at least " +
+                        "$MIN_VALUE.")
+            }
+        }
+    }
+
+    sealed interface CreationResult {
+        @JvmInline
+        value class Success(val count: PomodoroLongBreakPerShortBreaksCount) : CreationResult
+        data object TooSmall : CreationResult
     }
 }

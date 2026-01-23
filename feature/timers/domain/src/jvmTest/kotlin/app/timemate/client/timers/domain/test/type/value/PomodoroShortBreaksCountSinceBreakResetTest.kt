@@ -1,60 +1,71 @@
 package app.timemate.client.timers.domain.test.type.value
 
 import app.timemate.client.timers.domain.type.value.PomodoroShortBreaksCountSinceBreakReset
-import com.y9vad9.ktiny.kotlidator.ValidationException
-import com.y9vad9.ktiny.kotlidator.createOrThrow
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
-import kotlin.test.assertTrue
+import kotlin.test.assertIs
 
 class PomodoroShortBreaksCountSinceBreakResetTest {
 
     @Test
-    fun `createOrThrow returns valid instance for allowed value`() {
+    fun `create returns Success for valid positive count`() {
         // GIVEN
-        val validValue = 3
+        val count = 3
 
         // WHEN
-        val result = PomodoroShortBreaksCountSinceBreakReset.factory.createOrThrow(validValue)
+        val result = PomodoroShortBreaksCountSinceBreakReset.create(count)
 
         // THEN
-        assertEquals(validValue, result.int, "The stored int value should match the input")
+        assertIs<PomodoroShortBreaksCountSinceBreakReset.CreationResult.Success>(result)
+        assertEquals(count, result.count.int)
     }
 
     @Test
-    fun `createOrThrow throws for negative value`() {
+    fun `create returns Success for zero count`() {
         // GIVEN
-        val invalidValue = -1
+        val count = 0
 
-        // WHEN & THEN
-        assertFailsWith<ValidationException> {
-            PomodoroShortBreaksCountSinceBreakReset.Companion.factory.createOrThrow(invalidValue)
+        // WHEN
+        val result = PomodoroShortBreaksCountSinceBreakReset.create(count)
+
+        // THEN
+        assertIs<PomodoroShortBreaksCountSinceBreakReset.CreationResult.Success>(result)
+        assertEquals(count, result.count.int)
+    }
+
+    @Test
+    fun `create returns Negative for negative count`() {
+        // GIVEN
+        val count = -1
+
+        // WHEN
+        val result = PomodoroShortBreaksCountSinceBreakReset.create(count)
+
+        // THEN
+        assertIs<PomodoroShortBreaksCountSinceBreakReset.CreationResult.Negative>(result)
+    }
+
+    @Test
+    fun `createOrThrow returns PomodoroShortBreaksCountSinceBreakReset for valid count`() {
+        // GIVEN
+        val count = 5
+
+        // WHEN
+        val result = PomodoroShortBreaksCountSinceBreakReset.createOrThrow(count)
+
+        // THEN
+        assertEquals(count, result.int)
+    }
+
+    @Test
+    fun `createOrThrow throws IllegalArgumentException for negative count`() {
+        // GIVEN
+        val count = -1
+
+        // WHEN / THEN
+        assertFailsWith<IllegalArgumentException> {
+            PomodoroShortBreaksCountSinceBreakReset.createOrThrow(count)
         }
-    }
-
-    @Test
-    fun `create returns failure Result for negative value`() {
-        // GIVEN
-        val invalidValue = -5
-
-        // WHEN
-        val result = PomodoroShortBreaksCountSinceBreakReset.Companion.factory.create(invalidValue)
-
-        // THEN
-        assertTrue(result.isFailure, "Result should be failure for invalid input")
-    }
-
-    @Test
-    fun `create returns success Result for zero value`() {
-        // GIVEN
-        val validValue = 0
-
-        // WHEN
-        val result = PomodoroShortBreaksCountSinceBreakReset.Companion.factory.create(validValue)
-
-        // THEN
-        assertTrue(result.isSuccess, "Result should be success for valid input")
-        assertEquals(validValue, result.getOrThrow().int, "The stored int should be zero")
     }
 }

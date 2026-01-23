@@ -6,7 +6,6 @@ import app.timemate.client.timers.domain.type.settings.value.PomodoroFocusTime
 import app.timemate.client.timers.domain.type.settings.value.PomodoroLongBreakTime
 import app.timemate.client.timers.domain.type.settings.value.PomodoroPreparationTime
 import app.timemate.client.timers.domain.type.settings.value.PomodoroShortBreakTime
-import com.y9vad9.ktiny.kotlidator.createOrThrow
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 
@@ -29,18 +28,18 @@ import kotlin.time.Duration.Companion.seconds
  * @throws IllegalArgumentException if any of the domain constraints are violated.
  */
 data class PomodoroTimerSettings @Throws(IllegalArgumentException::class) constructor(
-    val pomodoroFocusTime: PomodoroFocusTime = PomodoroFocusTime.factory.createOrThrow(25.minutes),
+    val pomodoroFocusTime: PomodoroFocusTime = PomodoroFocusTime.createOrThrow(25.minutes),
 
-    val pomodoroShortBreakTime: PomodoroShortBreakTime = PomodoroShortBreakTime.factory.createOrThrow(5.minutes),
-    val longBreakTime: PomodoroLongBreakTime = PomodoroLongBreakTime.factory.createOrThrow(10.minutes),
+    val pomodoroShortBreakTime: PomodoroShortBreakTime = PomodoroShortBreakTime.createOrThrow(5.minutes),
+    val longBreakTime: PomodoroLongBreakTime = PomodoroLongBreakTime.createOrThrow(10.minutes),
     val longBreakPer: PomodoroLongBreakPerShortBreaksCount = PomodoroLongBreakPerShortBreaksCount.DEFAULT,
     val isLongBreakEnabled: Boolean = true,
 
     val isPreparationStateEnabled: Boolean = false,
-    val preparationTime: PomodoroPreparationTime = PomodoroPreparationTime.factory.createOrThrow(10.seconds),
+    val preparationTime: PomodoroPreparationTime = PomodoroPreparationTime.createOrThrow(10.seconds),
 
     val requiresConfirmationBeforeStart: Boolean = false,
-    val confirmationTimeoutTime: PomodoroConfirmationTimeoutTime = PomodoroConfirmationTimeoutTime.factory
+    val confirmationTimeoutTime: PomodoroConfirmationTimeoutTime = PomodoroConfirmationTimeoutTime
         .createOrThrow(30.seconds),
 ) {
     init {

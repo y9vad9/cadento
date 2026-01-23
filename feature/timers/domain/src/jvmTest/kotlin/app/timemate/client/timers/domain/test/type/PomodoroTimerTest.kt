@@ -14,7 +14,6 @@ import app.timemate.client.timers.domain.type.task.value.LinkedTaskId
 import app.timemate.client.timers.domain.type.task.value.LinkedTaskName
 import app.timemate.client.timers.domain.type.value.TimerId
 import app.timemate.client.timers.domain.type.value.TimerName
-import com.y9vad9.ktiny.kotlidator.createOrThrow
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
@@ -84,8 +83,8 @@ class PomodoroTimerTest {
         settings: PomodoroTimerSettings = defaultSettings(),
     ): PomodoroTimer {
         return PomodoroTimer(
-            id = TimerId.factory.createOrThrow(1),
-            name = TimerName.factory.createOrThrow("Test Timer"),
+            id = TimerId.createOrThrow(1),
+            name = TimerName.createOrThrow("Test Timer"),
             creationTime = initialTime,
             state = state,
             linkedTask = null,
@@ -95,22 +94,22 @@ class PomodoroTimerTest {
 
     private fun createTask(): LinkedTimerTask {
         return LinkedTimerTask(
-            id = LinkedTaskId.factory.createOrThrow(1),
-            name = LinkedTaskName.factory.createOrThrow("Test Task"),
+            id = LinkedTaskId.createOrThrow(1),
+            name = LinkedTaskName.createOrThrow("Test Task"),
             creationTime = initialTime,
             dueTime = initialTime + 30.minutes,
         )
     }
 
     private fun defaultSettings(): PomodoroTimerSettings = PomodoroTimerSettings(
-        pomodoroFocusTime = PomodoroFocusTime.factory.createOrThrow(25.minutes),
-        pomodoroShortBreakTime = PomodoroShortBreakTime.factory.createOrThrow(5.minutes),
-        longBreakTime = PomodoroLongBreakTime.factory.createOrThrow(10.minutes),
+        pomodoroFocusTime = PomodoroFocusTime.createOrThrow(25.minutes),
+        pomodoroShortBreakTime = PomodoroShortBreakTime.createOrThrow(5.minutes),
+        longBreakTime = PomodoroLongBreakTime.createOrThrow(10.minutes),
         longBreakPer = PomodoroLongBreakPerShortBreaksCount.DEFAULT,
         isLongBreakEnabled = true,
         isPreparationStateEnabled = false,
-        preparationTime = PomodoroPreparationTime.factory.createOrThrow(10.seconds),
+        preparationTime = PomodoroPreparationTime.createOrThrow(10.seconds),
         requiresConfirmationBeforeStart = false,
-        confirmationTimeoutTime = PomodoroConfirmationTimeoutTime.factory.createOrThrow(30.seconds),
+        confirmationTimeoutTime = PomodoroConfirmationTimeoutTime.createOrThrow(30.seconds),
     )
 }

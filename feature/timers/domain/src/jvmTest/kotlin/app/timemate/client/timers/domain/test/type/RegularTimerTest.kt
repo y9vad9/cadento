@@ -7,7 +7,6 @@ import app.timemate.client.timers.domain.type.task.value.LinkedTaskId
 import app.timemate.client.timers.domain.type.task.value.LinkedTaskName
 import app.timemate.client.timers.domain.type.value.TimerId
 import app.timemate.client.timers.domain.type.value.TimerName
-import com.y9vad9.ktiny.kotlidator.createOrThrow
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
@@ -74,8 +73,8 @@ class RegularTimerTest {
         state: RegularTimerState = RegularTimerState.Inactive(initialTime, null),
     ): RegularTimer {
         return RegularTimer(
-            id = TimerId.factory.createOrThrow(1),
-            name = TimerName.factory.createOrThrow("Regular Timer"),
+            id = TimerId.createOrThrow(1),
+            name = TimerName.createOrThrow("Regular Timer"),
             creationTime = initialTime,
             state = state,
             linkedTask = null,
@@ -84,8 +83,8 @@ class RegularTimerTest {
 
     private fun createTask(): LinkedTimerTask {
         return LinkedTimerTask(
-            id = LinkedTaskId.factory.createOrThrow(1),
-            name = LinkedTaskName.factory.createOrThrow("Test Task"),
+            id = LinkedTaskId.createOrThrow(1),
+            name = LinkedTaskName.createOrThrow("Test Task"),
             creationTime = initialTime,
             dueTime = initialTime + 30.minutes,
         )

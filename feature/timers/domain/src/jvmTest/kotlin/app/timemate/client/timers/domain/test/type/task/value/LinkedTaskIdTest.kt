@@ -1,12 +1,12 @@
-package app.timemate.client.timers.domain.test.type.value
+package app.timemate.client.timers.domain.test.type.task.value
 
-import app.timemate.client.timers.domain.type.value.TimerId
+import app.timemate.client.timers.domain.type.task.value.LinkedTaskId
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertIs
 
-class TimerIdTest {
+class LinkedTaskIdTest {
 
     @Test
     fun `create returns Success for valid positive ID`() {
@@ -14,11 +14,11 @@ class TimerIdTest {
         val id = 1L
 
         // WHEN
-        val result = TimerId.create(id)
+        val result = LinkedTaskId.create(id)
 
         // THEN
-        assertIs<TimerId.CreationResult.Success>(result)
-        assertEquals(id, result.timerId.long)
+        assertIs<LinkedTaskId.CreationResult.Success>(result)
+        assertEquals(id, result.linkedTaskId.long)
     }
 
     @Test
@@ -27,11 +27,11 @@ class TimerIdTest {
         val id = 0L
 
         // WHEN
-        val result = TimerId.create(id)
+        val result = LinkedTaskId.create(id)
 
         // THEN
-        assertIs<TimerId.CreationResult.Success>(result)
-        assertEquals(id, result.timerId.long)
+        assertIs<LinkedTaskId.CreationResult.Success>(result)
+        assertEquals(id, result.linkedTaskId.long)
     }
 
     @Test
@@ -40,22 +40,22 @@ class TimerIdTest {
         val id = -1L
 
         // WHEN
-        val result = TimerId.create(id)
+        val result = LinkedTaskId.create(id)
 
         // THEN
-        assertIs<TimerId.CreationResult.Negative>(result)
+        assertIs<LinkedTaskId.CreationResult.Negative>(result)
     }
 
     @Test
-    fun `createOrThrow returns TimerId for valid ID`() {
+    fun `createOrThrow returns LinkedTaskId for valid ID`() {
         // GIVEN
         val id = 100L
 
         // WHEN
-        val timerId = TimerId.createOrThrow(id)
+        val linkedTaskId = LinkedTaskId.createOrThrow(id)
 
         // THEN
-        assertEquals(id, timerId.long)
+        assertEquals(id, linkedTaskId.long)
     }
 
     @Test
@@ -65,7 +65,7 @@ class TimerIdTest {
 
         // WHEN / THEN
         assertFailsWith<IllegalArgumentException> {
-            TimerId.createOrThrow(id)
+            LinkedTaskId.createOrThrow(id)
         }
     }
 }

@@ -1,13 +1,8 @@
 package app.timemate.client.timers.domain.type.settings.value
 
-import app.timemate.client.foundation.validation.DurationFrameValidation
-import com.y9vad9.ktiny.kotlidator.ValueFactory
-import com.y9vad9.ktiny.kotlidator.factory
 import kotlin.jvm.JvmInline
 import kotlin.time.Duration
-import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.minutes
-import kotlin.time.Duration.Companion.seconds
 
 @JvmInline
 value class PomodoroShortBreakTime private constructor(
@@ -19,9 +14,29 @@ value class PomodoroShortBreakTime private constructor(
 
         val TIME_RANGE: ClosedRange<Duration> = MIN_TIME..MAX_TIME
 
-        val factory: ValueFactory<PomodoroShortBreakTime, Duration> = factory(
-            rules = listOf(DurationFrameValidation(TIME_RANGE)),
-            constructor = ::PomodoroShortBreakTime,
-        )
+        fun create(value: Duration): CreationResult {
+            return when {
+                value < MIN_TIME -> CreationResult.TooShort
+                value > MAX_TIME -> CreationResult.TooLong
+                else -> CreationResult.Success(PomodoroShortBreakTime(value))
+            }
+        }
+
+        fun createOrThrow(value: Duration): PomodoroShortBreakTime {
+            return when (val result = create(value)) {
+                is CreationResult.Success -> result.time
+                is CreationResult.TooShort ->
+                    throw IllegalArgumentException("Pomodoro short break time must be at least $MIN_TIME.")
+                is CreationResult.TooLong ->
+                    throw IllegalArgumentException("Pomodoro short break time cannot exceed $MAX_TIME.")
+            }
+        }
+    }
+
+    sealed interface CreationResult {
+        @JvmInline
+        value class Success(val time: PomodoroShortBreakTime) : CreationResult
+        data object TooShort : CreationResult
+        data object TooLong : CreationResult
     }
 }

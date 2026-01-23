@@ -1,46 +1,71 @@
 package app.timemate.client.tasks.domain.tests.type.value
 
 import app.timemate.client.tasks.domain.type.value.TaskId
-import com.y9vad9.ktiny.kotlidator.ValidationException
-import com.y9vad9.ktiny.kotlidator.createOrThrow
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
+import kotlin.test.assertIs
 
 class TaskIdTest {
 
     @Test
-    fun `valid TaskId is created from valid long`() {
+    fun `create returns Success for valid positive ID`() {
         // GIVEN
-        val validLong = 1L
+        val id = 1L
 
         // WHEN
-        val taskId = TaskId.factory.createOrThrow(validLong)
+        val result = TaskId.create(id)
 
         // THEN
-        assertEquals(validLong, taskId.long)
+        assertIs<TaskId.CreationResult.Success>(result)
+        assertEquals(id, result.taskId.long)
     }
 
     @Test
-    fun `creation succeeds for zero value`() {
+    fun `create returns Success for zero ID`() {
         // GIVEN
-        val zeroValue = 0L
+        val id = 0L
 
         // WHEN
-        val taskId = TaskId.factory.createOrThrow(zeroValue)
+        val result = TaskId.create(id)
 
         // THEN
-        assertEquals(zeroValue, taskId.long)
+        assertIs<TaskId.CreationResult.Success>(result)
+        assertEquals(id, result.taskId.long)
     }
 
     @Test
-    fun `creation fails for negative long`() {
+    fun `create returns Negative for negative ID`() {
         // GIVEN
-        val negativeLong = -1L
+        val id = -1L
+
+        // WHEN
+        val result = TaskId.create(id)
+
+        // THEN
+        assertIs<TaskId.CreationResult.Negative>(result)
+    }
+
+    @Test
+    fun `createOrThrow returns TaskId for valid ID`() {
+        // GIVEN
+        val id = 100L
+
+        // WHEN
+        val taskId = TaskId.createOrThrow(id)
+
+        // THEN
+        assertEquals(id, taskId.long)
+    }
+
+    @Test
+    fun `createOrThrow throws IllegalArgumentException for negative ID`() {
+        // GIVEN
+        val id = -5L
 
         // WHEN / THEN
-        assertFailsWith<ValidationException> {
-            TaskId.factory.createOrThrow(negativeLong)
+        assertFailsWith<IllegalArgumentException> {
+            TaskId.createOrThrow(id)
         }
     }
 }

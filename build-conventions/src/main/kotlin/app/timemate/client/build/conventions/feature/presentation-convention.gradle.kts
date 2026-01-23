@@ -9,7 +9,3 @@ plugins {
 }
 
 val libs = the<LibrariesForLibs>()
-
-dependencies {
-    commonMainApi(libs.y9vad9.ktiny.kotlidator)
-}
