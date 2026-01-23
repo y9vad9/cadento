@@ -23,10 +23,10 @@ val conventions: ConventionNamespace = ConventionNamespace()
  */
 class ConventionNamespace internal constructor(
     /** ID of the base JVM convention plugin. */
-    val jvm: String = "app.timemate.client.build.conventions.jvm-convention",
+    val jvm: String = "timemate.client.gradle.convention.jvm-convention",
 
     /** ID of the shared test conventions plugin. */
-    val tests: String = "app.timemate.client.build.conventions.tests-convention",
+    val tests: String = "timemate.client.gradle.convention.tests-convention",
 
     /** Convention plugins used for feature modules (e.g., DI, Compose, Domain). */
     val feature: FeatureNamespace = FeatureNamespace(),
@@ -34,7 +34,7 @@ class ConventionNamespace internal constructor(
     /**
      * Convention plugin to enable kover in the module with default settings.
      */
-    val kover: String = "app.timemate.client.build.conventions.kover-convention",
+    val kover: String = "timemate.client.gradle.convention.kover-convention",
 
     /** Convention plugins used in Kotlin Multiplatform projects. */
     val multiplatform: MultiplatformNamespace = MultiplatformNamespace()
@@ -45,17 +45,17 @@ class ConventionNamespace internal constructor(
  */
 class FeatureNamespace internal constructor(
     /** Convention plugin for DI setup in feature modules. */
-    val di: String = "app.timemate.client.build.conventions.feature.di-convention",
+    val di: String = "timemate.client.gradle.convention.feature.di-convention",
 
     /** Convention plugin for domain-layer setup in feature modules. */
-    val domain: String = "app.timemate.client.build.conventions.feature.domain-convention",
+    val domain: String = "timemate.client.gradle.convention.feature.domain-convention",
 
     /** Convention plugins related to integration-layer concerns like database, network, etc. */
-    val integration: String = "app.timemate.client.build.conventions.feature.integration-convention",
+    val integration: String = "timemate.client.gradle.convention.feature.integration-convention",
 
-    val database: String = "app.timemate.client.build.conventions.feature.integration-database-convention",
+    val database: String = "timemate.client.gradle.convention.feature.integration-database-convention",
 
-    val presentation: String = "app.timemate.client.build.conventions.feature.presentation-convention",
+    val presentation: String = "timemate.client.gradle.convention.feature.presentation-convention",
 
     /** Convention plugins related to Compose UI setup in feature modules. */
     val compose: FeatureComposeNamespace = FeatureComposeNamespace(),
@@ -66,7 +66,7 @@ class FeatureNamespace internal constructor(
  */
 class FeatureComposeNamespace internal constructor(
     /** Convention plugin for Compose UI setup. */
-    val ui: String = "app.timemate.client.build.conventions.feature.compose-ui-convention"
+    val ui: String = "timemate.client.gradle.convention.feature.compose-ui-convention"
 )
 
 
@@ -75,5 +75,5 @@ class FeatureComposeNamespace internal constructor(
  */
 class MultiplatformNamespace internal constructor(
     /** Convention plugin for setting up shared multiplatform libraries. */
-    val library: String = "app.timemate.client.build.conventions.multiplatform-library-convention"
+    val library: String = "timemate.client.gradle.convention.multiplatform-library-convention"
 )
