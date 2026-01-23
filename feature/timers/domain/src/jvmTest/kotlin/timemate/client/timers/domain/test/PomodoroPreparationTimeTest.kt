@@ -1,0 +1,98 @@
+package timemate.client.timers.domain.test
+
+import timemate.client.timers.domain.PomodoroPreparationTime
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
+import kotlin.test.assertIs
+import kotlin.time.Duration.Companion.minutes
+import kotlin.time.Duration.Companion.seconds
+
+class PomodoroPreparationTimeTest {
+
+    @Test
+    fun `create returns Success for valid duration`() {
+        // GIVEN
+        val duration = 1.minutes
+
+        // WHEN
+        val result = PomodoroPreparationTime.create(duration)
+
+        // THEN
+        assertIs<PomodoroPreparationTime.CreationResult.Success>(result)
+        assertEquals(duration, result.time.duration)
+    }
+
+    @Test
+    fun `create returns Success for min duration`() {
+        // GIVEN
+        val duration = 5.seconds
+
+        // WHEN
+        val result = PomodoroPreparationTime.create(duration)
+
+        // THEN
+        assertIs<PomodoroPreparationTime.CreationResult.Success>(result)
+        assertEquals(duration, result.time.duration)
+    }
+
+    @Test
+    fun `create returns Success for max duration`() {
+        // GIVEN
+        val duration = 5.minutes
+
+        // WHEN
+        val result = PomodoroPreparationTime.create(duration)
+
+        // THEN
+        assertIs<PomodoroPreparationTime.CreationResult.Success>(result)
+        assertEquals(duration, result.time.duration)
+    }
+
+    @Test
+    fun `create returns TooShort for duration below min`() {
+        // GIVEN
+        val duration = 4.seconds
+
+        // WHEN
+        val result = PomodoroPreparationTime.create(duration)
+
+        // THEN
+        assertIs<PomodoroPreparationTime.CreationResult.TooShort>(result)
+    }
+
+    @Test
+    fun `create returns TooLong for duration above max`() {
+        // GIVEN
+        val duration = 5.minutes + 1.seconds
+
+        // WHEN
+        val result = PomodoroPreparationTime.create(duration)
+
+        // THEN
+        assertIs<PomodoroPreparationTime.CreationResult.TooLong>(result)
+    }
+
+    @Test
+    fun `createOrThrow returns PomodoroPreparationTime for valid duration`() {
+        // GIVEN
+        val duration = 30.seconds
+
+        // WHEN
+        val time = PomodoroPreparationTime.createOrThrow(duration)
+
+        // THEN
+        assertEquals(duration, time.duration)
+    }
+
+    @Test
+    fun `createOrThrow throws IllegalArgumentException for invalid duration`() {
+        // GIVEN
+        val duration = 10.minutes
+
+        // WHEN / THEN
+        assertFailsWith<IllegalArgumentException> {
+            PomodoroPreparationTime.createOrThrow(duration)
+        }
+    }
+}
