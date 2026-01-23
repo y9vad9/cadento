@@ -1,85 +1,96 @@
 package app.timemate.client.timers.domain.test.type.tag.value
 
 import app.timemate.client.timers.domain.type.tag.value.TimerTagName
-import com.y9vad9.ktiny.kotlidator.ValidationException
-import com.y9vad9.ktiny.kotlidator.createOrThrow
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
-import kotlin.test.assertTrue
+import kotlin.test.assertIs
 
 class TimerTagNameTest {
 
     @Test
-    fun `createOrThrow returns valid instance for allowed string`() {
+    fun `create returns Success for valid name`() {
         // GIVEN
-        val validString = "Productive Tag"
+        val validName = "My Tag"
 
         // WHEN
-        val result = TimerTagName.factory.createOrThrow(validString)
+        val result = TimerTagName.create(validName)
 
         // THEN
-        assertEquals(
-            actual = result.string,
-            expected = validString,
-            message = "Stored string should match the input string",
-        )
+        assertIs<TimerTagName.CreationResult.Success>(result)
+        assertEquals(validName, result.timerTagName.string)
     }
 
     @Test
-    fun `createOrThrow throws for empty string`() {
+    fun `create returns Success for name with minimum length`() {
         // GIVEN
-        val empty = ""
+        val minName = "A"
+
+        // WHEN
+        val result = TimerTagName.create(minName)
+
+        // THEN
+        assertIs<TimerTagName.CreationResult.Success>(result)
+        assertEquals(minName, result.timerTagName.string)
+    }
+
+    @Test
+    fun `create returns Success for name with maximum length`() {
+        // GIVEN
+        val maxName = "a".repeat(50)
+
+        // WHEN
+        val result = TimerTagName.create(maxName)
+
+        // THEN
+        assertIs<TimerTagName.CreationResult.Success>(result)
+        assertEquals(maxName, result.timerTagName.string)
+    }
+
+    @Test
+    fun `create returns Empty for empty name`() {
+        // GIVEN
+        val emptyName = ""
+
+        // WHEN
+        val result = TimerTagName.create(emptyName)
+
+        // THEN
+        assertIs<TimerTagName.CreationResult.Empty>(result)
+    }
+
+    @Test
+    fun `create returns TooLong for name exceeding max length`() {
+        // GIVEN
+        val tooLongName = "a".repeat(51)
+
+        // WHEN
+        val result = TimerTagName.create(tooLongName)
+
+        // THEN
+        assertIs<TimerTagName.CreationResult.TooLong>(result)
+    }
+
+    @Test
+    fun `createOrThrow returns TimerTagName for valid name`() {
+        // GIVEN
+        val name = "Valid Tag Name"
+
+        // WHEN
+        val tagName = TimerTagName.createOrThrow(name)
+
+        // THEN
+        assertEquals(name, tagName.string)
+    }
+
+    @Test
+    fun `createOrThrow throws IllegalArgumentException for invalid name`() {
+        // GIVEN
+        val invalidName = ""
 
         // WHEN / THEN
-        assertFailsWith<ValidationException> {
-            TimerTagName.factory.createOrThrow(empty)
+        assertFailsWith<IllegalArgumentException> {
+            TimerTagName.createOrThrow(invalidName)
         }
-    }
-
-    @Test
-    fun `createOrThrow throws for string exceeding max length`() {
-        // GIVEN
-        val tooLong = "a".repeat(51)
-
-        // WHEN / THEN
-        assertFailsWith<ValidationException> {
-            TimerTagName.factory.createOrThrow(tooLong)
-        }
-    }
-
-    @Test
-    fun `create returns failure for invalid string`() {
-        // GIVEN
-        val invalid = ""
-
-        // WHEN
-        val result = TimerTagName.factory.create(invalid)
-
-        // THEN
-        assertTrue(
-            actual = result.isFailure,
-            message = "Result should be failure for invalid string",
-        )
-    }
-
-    @Test
-    fun `create returns success for valid string`() {
-        // GIVEN
-        val valid = "Focused"
-
-        // WHEN
-        val result = TimerTagName.factory.create(valid)
-
-        // THEN
-        assertTrue(
-            actual = result.isSuccess,
-            message = "Result should be success for valid input",
-        )
-        assertEquals(
-            actual = result.getOrThrow().string,
-            expected = valid,
-            message = "Stored string should match input",
-        )
     }
 }

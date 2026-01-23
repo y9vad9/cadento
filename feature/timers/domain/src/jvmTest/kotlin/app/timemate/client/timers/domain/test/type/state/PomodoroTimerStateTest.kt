@@ -10,7 +10,6 @@ import app.timemate.client.timers.domain.type.settings.value.PomodoroPreparation
 import app.timemate.client.timers.domain.type.settings.value.PomodoroShortBreakTime
 import app.timemate.client.timers.domain.type.state.PomodoroTimerState
 import app.timemate.client.timers.domain.type.value.PomodoroShortBreaksCountSinceBreakReset
-import com.y9vad9.ktiny.kotlidator.createOrThrow
 import kotlin.test.Test
 import kotlin.test.assertContains
 import kotlin.test.assertEquals
@@ -35,21 +34,21 @@ class PomodoroTimerStateTest {
     ): PomodoroTimerSettings {
         return PomodoroTimerSettings(
             isLongBreakEnabled = isLongBreakEnabled,
-            longBreakPer = PomodoroLongBreakPerShortBreaksCount.factory.createOrThrow(longBreakPer),
-            pomodoroFocusTime = PomodoroFocusTime.factory.createOrThrow(focusTimeMinutes.minutes),
-            pomodoroShortBreakTime = PomodoroShortBreakTime.factory.createOrThrow(shortBreakDurationMinutes.minutes),
-            longBreakTime = PomodoroLongBreakTime.factory.createOrThrow(longBreakDurationMinutes.minutes),
+            longBreakPer = PomodoroLongBreakPerShortBreaksCount.createOrThrow(longBreakPer),
+            pomodoroFocusTime = PomodoroFocusTime.createOrThrow(focusTimeMinutes.minutes),
+            pomodoroShortBreakTime = PomodoroShortBreakTime.createOrThrow(shortBreakDurationMinutes.minutes),
+            longBreakTime = PomodoroLongBreakTime.createOrThrow(longBreakDurationMinutes.minutes),
             requiresConfirmationBeforeStart = requiresConfirmationBeforeStart,
             isPreparationStateEnabled = isPreparationStateEnabled,
-            confirmationTimeoutTime = PomodoroConfirmationTimeoutTime.factory
+            confirmationTimeoutTime = PomodoroConfirmationTimeoutTime
                 .createOrThrow(confirmationTimeoutMinutes.minutes),
-            preparationTime = PomodoroPreparationTime.factory.createOrThrow(preparationDurationMinutes.minutes),
+            preparationTime = PomodoroPreparationTime.createOrThrow(preparationDurationMinutes.minutes),
         )
     }
 
     // A simple ShortBreaksCountSinceBreakReset with a GIVEN count
     private fun shortBreakCountSinceReset(count: Int): PomodoroShortBreaksCountSinceBreakReset {
-        return PomodoroShortBreaksCountSinceBreakReset.factory.createOrThrow(count)
+        return PomodoroShortBreaksCountSinceBreakReset.createOrThrow(count)
     }
 
     @Test
@@ -139,11 +138,11 @@ class PomodoroTimerStateTest {
 
         // THEN
         assertIs<PomodoroTimerState.ShortBreak>(next)
-        assertEquals<Instant>(
+        assertEquals(
             expected = focus.endTime,
             actual = next.startTime,
         )
-        assertEquals<Instant>(
+        assertEquals(
             expected = focus.endTime + settings.pomodoroShortBreakTime.duration,
             actual = next.endTime,
         )
@@ -240,7 +239,7 @@ class PomodoroTimerStateTest {
     }
 
     @Test
-    fun `Paused onExpiration returns Inactive with endTime equal to startTime plus default`() {
+    fun `Paused onExpiration returns Inactive with correct startTime and endTime`() {
         // GIVEN
         val startTime = Instant.parse("2025-06-03T16:00:00Z")
         val paused = PomodoroTimerState.Paused(startTime)
@@ -249,13 +248,14 @@ class PomodoroTimerStateTest {
         val next = paused.onExpiration()
 
         // THEN
+        assertIs<PomodoroTimerState.Inactive>(next)
         assertEquals(
-            expected = paused.endTime,
-            actual = startTime + 25.minutes,
+            expected = paused.endTime, // The endTime of the paused state
+            actual = next.startTime, // Should be the startTime of the new Inactive state
         )
         assertEquals(
-            expected = next.endTime,
-            actual = Instant.DISTANT_FUTURE
+            expected = Instant.DISTANT_FUTURE, // The default endTime for Inactive state
+            actual = next.endTime,
         )
     }
 

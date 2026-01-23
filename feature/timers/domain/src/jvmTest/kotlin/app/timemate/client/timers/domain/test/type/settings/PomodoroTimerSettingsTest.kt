@@ -6,7 +6,6 @@ import app.timemate.client.timers.domain.type.settings.value.PomodoroConfirmatio
 import app.timemate.client.timers.domain.type.settings.value.PomodoroLongBreakTime
 import app.timemate.client.timers.domain.type.settings.value.PomodoroPreparationTime
 import app.timemate.client.timers.domain.type.settings.value.PomodoroShortBreakTime
-import com.y9vad9.ktiny.kotlidator.createOrThrow
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
@@ -33,8 +32,8 @@ class PomodoroTimerSettingsTest {
     @Test
     fun `fails when long break is shorter than short break`() {
         // GIVEN
-        val longBreak = PomodoroLongBreakTime.factory.createOrThrow(4.minutes)
-        val shortBreak = PomodoroShortBreakTime.factory.createOrThrow(5.minutes)
+        val longBreak = PomodoroLongBreakTime.createOrThrow(4.minutes)
+        val shortBreak = PomodoroShortBreakTime.createOrThrow(5.minutes)
 
         // WHEN / THEN
         val exception = assertFailsWith<IllegalArgumentException> {
@@ -50,7 +49,7 @@ class PomodoroTimerSettingsTest {
     @Test
     fun `enablePreparation updates flags and value`() {
         // GIVEN
-        val newPrep = PomodoroPreparationTime.factory.createOrThrow(6.seconds)
+        val newPrep = PomodoroPreparationTime.createOrThrow(6.seconds)
 
         // WHEN
         val updated = validSettings().enablePreparation(newPrep)
@@ -64,7 +63,7 @@ class PomodoroTimerSettingsTest {
     fun `disablePreparation resets flag only`() {
         // GIVEN
         val initial = validSettings().enablePreparation(
-            PomodoroPreparationTime.factory.createOrThrow(6.seconds)
+            PomodoroPreparationTime.createOrThrow(6.seconds)
         )
 
         // WHEN
@@ -78,7 +77,7 @@ class PomodoroTimerSettingsTest {
     @Test
     fun `requireConfirmation sets confirmation and timeout`() {
         // GIVEN
-        val timeout = PomodoroConfirmationTimeoutTime.factory.createOrThrow(5.seconds)
+        val timeout = PomodoroConfirmationTimeoutTime.createOrThrow(5.seconds)
 
         // WHEN
         val updated = validSettings().requireConfirmation(timeout)
@@ -92,7 +91,7 @@ class PomodoroTimerSettingsTest {
     fun `skipConfirmation disables flag only`() {
         // GIVEN
         val initial = validSettings().requireConfirmation(
-            PomodoroConfirmationTimeoutTime.factory.createOrThrow(10.seconds)
+            PomodoroConfirmationTimeoutTime.createOrThrow(10.seconds)
         )
 
         // WHEN
@@ -106,8 +105,8 @@ class PomodoroTimerSettingsTest {
     @Test
     fun `enableLongBreaks sets strategy`() {
         // GIVEN
-        val longBreak = PomodoroLongBreakTime.factory.createOrThrow(15.minutes)
-        val count = PomodoroLongBreakPerShortBreaksCount.factory.createOrThrow(4)
+        val longBreak = PomodoroLongBreakTime.createOrThrow(15.minutes)
+        val count = PomodoroLongBreakPerShortBreaksCount.createOrThrow(4)
 
         // WHEN
         val updated = validSettings().enableLongBreaks(longBreak, count)

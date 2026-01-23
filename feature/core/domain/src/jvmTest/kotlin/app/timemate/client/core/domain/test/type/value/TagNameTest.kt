@@ -1,69 +1,107 @@
 package app.timemate.client.core.domain.test.type.value
 
 import app.timemate.client.core.domain.type.value.TagName
-import com.y9vad9.ktiny.kotlidator.ValidationException
-import com.y9vad9.ktiny.kotlidator.createOrThrow
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
+import kotlin.test.assertIs
 
 class TagNameTest {
+
     @Test
-    fun `valid TagName is created from valid string`() {
+    fun `create returns Success for valid name`() {
         // GIVEN
-        val validLength = TagName.LENGTH_RANGE.random()
-        val validString = "a".repeat(validLength)
+        val validName = "My Tag"
 
         // WHEN
-        val tagName = TagName.factory.createOrThrow(validString)
+        val result = TagName.create(validName)
 
         // THEN
-        assertEquals(validString, tagName.string)
+        assertIs<TagName.CreationResult.Success>(result)
+        assertEquals(validName, result.tagName.string)
     }
 
     @Test
-    fun `creation fails for less than required minimal length`() {
+    fun `create returns Success for name with minimum length`() {
         // GIVEN
-        val string = "a".repeat(TagName.MIN_LENGTH - 1)
+        val minName = "A"
+
+        // WHEN
+        val result = TagName.create(minName)
+
+        // THEN
+        assertIs<TagName.CreationResult.Success>(result)
+        assertEquals(minName, result.tagName.string)
+    }
+
+    @Test
+    fun `create returns Success for name with maximum length`() {
+        // GIVEN
+        val maxName = "a".repeat(TagName.MAX_LENGTH)
+
+        // WHEN
+        val result = TagName.create(maxName)
+
+        // THEN
+        assertIs<TagName.CreationResult.Success>(result)
+        assertEquals(maxName, result.tagName.string)
+    }
+
+    @Test
+    fun `create returns Empty for empty name`() {
+        // GIVEN
+        val emptyName = ""
+
+        // WHEN
+        val result = TagName.create(emptyName)
+
+        // THEN
+        assertIs<TagName.CreationResult.Empty>(result)
+    }
+
+    @Test
+    fun `create returns TooLong for name exceeding max length`() {
+        // GIVEN
+        val tooLongName = "a".repeat(TagName.MAX_LENGTH + 1)
+
+        // WHEN
+        val result = TagName.create(tooLongName)
+
+        // THEN
+        assertIs<TagName.CreationResult.TooLong>(result)
+    }
+
+    @Test
+    fun `createOrThrow returns TagName for valid name`() {
+        // GIVEN
+        val name = "Valid Tag Name"
+
+        // WHEN
+        val tagName = TagName.createOrThrow(name)
+
+        // THEN
+        assertEquals(name, tagName.string)
+    }
+
+    @Test
+    fun `createOrThrow throws IllegalArgumentException for empty name`() {
+        // GIVEN
+        val invalidName = ""
 
         // WHEN / THEN
-        assertFailsWith<ValidationException> {
-            TagName.factory.createOrThrow(string)
+        assertFailsWith<IllegalArgumentException> {
+            TagName.createOrThrow(invalidName)
         }
     }
 
     @Test
-    fun `creation fails for string longer than maximum allowed length`() {
+    fun `createOrThrow throws IllegalArgumentException for name exceeding max length`() {
         // GIVEN
-        val tooLongString = "a".repeat(TagName.MAX_LENGTH + 1)
+        val tooLongName = "a".repeat(TagName.MAX_LENGTH + 1)
 
         // WHEN / THEN
-        assertFailsWith<ValidationException> {
-            TagName.factory.createOrThrow(tooLongString)
+        assertFailsWith<IllegalArgumentException> {
+            TagName.createOrThrow(tooLongName)
         }
-    }
-
-    @Test
-    fun `creation succeeds for string with minimum length`() {
-        // GIVEN
-        val minLengthString = "a".repeat(TagName.MIN_LENGTH)
-
-        // WHEN
-        val tagName = TagName.factory.createOrThrow(minLengthString)
-
-        // THEN
-        assertEquals(minLengthString, tagName.string)
-    }
-
-    @Test
-    fun `creation succeeds for string with maximum length`() {
-        // GIVEN
-        val maxLengthString = "a".repeat(TagName.MAX_LENGTH)
-
-        // WHEN
-        val tagName = TagName.factory.createOrThrow(maxLengthString)
-
-        // THEN
-        assertEquals(maxLengthString, tagName.string)
     }
 }

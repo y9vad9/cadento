@@ -1,74 +1,71 @@
 package app.timemate.client.timers.domain.test.type.tag.value
 
 import app.timemate.client.timers.domain.type.tag.value.TimerTagId
-import com.y9vad9.ktiny.kotlidator.ValidationException
-import com.y9vad9.ktiny.kotlidator.createOrThrow
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
-import kotlin.test.assertTrue
+import kotlin.test.assertIs
 
 class TimerTagIdTest {
 
     @Test
-    fun `createOrThrow returns valid instance for non-negative value`() {
+    fun `create returns Success for valid positive ID`() {
         // GIVEN
-        val validValue = 42L
+        val id = 1L
 
         // WHEN
-        val result = TimerTagId.factory.createOrThrow(validValue)
+        val result = TimerTagId.create(id)
 
         // THEN
-        assertEquals(
-            actual = result.long,
-            expected = validValue,
-            message = "Stored long value should match input",
-        )
+        assertIs<TimerTagId.CreationResult.Success>(result)
+        assertEquals(id, result.timerTagId.long)
     }
 
     @Test
-    fun `createOrThrow throws for negative value`() {
+    fun `create returns Success for zero ID`() {
         // GIVEN
-        val invalidValue = -1L
+        val id = 0L
+
+        // WHEN
+        val result = TimerTagId.create(id)
+
+        // THEN
+        assertIs<TimerTagId.CreationResult.Success>(result)
+        assertEquals(id, result.timerTagId.long)
+    }
+
+    @Test
+    fun `create returns Negative for negative ID`() {
+        // GIVEN
+        val id = -1L
+
+        // WHEN
+        val result = TimerTagId.create(id)
+
+        // THEN
+        assertIs<TimerTagId.CreationResult.Negative>(result)
+    }
+
+    @Test
+    fun `createOrThrow returns TimerTagId for valid ID`() {
+        // GIVEN
+        val id = 100L
+
+        // WHEN
+        val timerTagId = TimerTagId.createOrThrow(id)
+
+        // THEN
+        assertEquals(id, timerTagId.long)
+    }
+
+    @Test
+    fun `createOrThrow throws IllegalArgumentException for negative ID`() {
+        // GIVEN
+        val id = -5L
 
         // WHEN / THEN
-        assertFailsWith<ValidationException> {
-            TimerTagId.factory.createOrThrow(invalidValue)
+        assertFailsWith<IllegalArgumentException> {
+            TimerTagId.createOrThrow(id)
         }
-    }
-
-    @Test
-    fun `create returns failure Result for negative value`() {
-        // GIVEN
-        val invalidValue = -5L
-
-        // WHEN
-        val result = TimerTagId.factory.create(invalidValue)
-
-        // THEN
-        assertTrue(
-            actual = result.isFailure,
-            message = "Result should be failure for invalid input",
-        )
-    }
-
-    @Test
-    fun `create returns success Result for zero value`() {
-        // GIVEN
-        val validValue = 0L
-
-        // WHEN
-        val result = TimerTagId.factory.create(validValue)
-
-        // THEN
-        assertTrue(
-            actual = result.isSuccess,
-            message = "Result should be success for valid input",
-        )
-        assertEquals(
-            actual = result.getOrThrow().long,
-            expected = validValue,
-            message = "Stored long value should match input",
-        )
     }
 }

@@ -1,8 +1,5 @@
 package app.timemate.client.timers.domain.type.settings.value
 
-import app.timemate.client.foundation.validation.DurationFrameValidation
-import com.y9vad9.ktiny.kotlidator.ValueFactory
-import com.y9vad9.ktiny.kotlidator.factory
 import kotlin.jvm.JvmInline
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.minutes
@@ -18,9 +15,30 @@ value class PomodoroPreparationTime private constructor(
 
         val TIME_RANGE: ClosedRange<Duration> = MIN_TIME..MAX_TIME
 
-        val factory: ValueFactory<PomodoroPreparationTime, Duration> = factory(
-            rules = listOf(DurationFrameValidation(TIME_RANGE)),
-            constructor = ::PomodoroPreparationTime,
-        )
+        fun create(value: Duration): CreationResult {
+            return when {
+                value < MIN_TIME -> CreationResult.TooShort
+                value > MAX_TIME -> CreationResult.TooLong
+                else -> CreationResult.Success(PomodoroPreparationTime(value))
+            }
+        }
+
+        fun createOrThrow(value: Duration): PomodoroPreparationTime {
+            return when (val result = create(value)) {
+                is CreationResult.Success ->
+                    result.time
+                is CreationResult.TooShort ->
+                    throw IllegalArgumentException("Pomodoro preparation time must be at least $MIN_TIME.")
+                is CreationResult.TooLong ->
+                    throw IllegalArgumentException("Pomodoro preparation time cannot exceed $MAX_TIME.")
+            }
+        }
+    }
+
+    sealed interface CreationResult {
+        @JvmInline
+        value class Success(val time: PomodoroPreparationTime) : CreationResult
+        data object TooShort : CreationResult
+        data object TooLong : CreationResult
     }
 }

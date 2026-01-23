@@ -1,9 +1,6 @@
 package app.timemate.client.tasks.domain.type.value
 
-import com.y9vad9.ktiny.kotlidator.ValueFactory
 import kotlin.jvm.JvmInline
-import com.y9vad9.ktiny.kotlidator.factory
-import com.y9vad9.ktiny.kotlidator.rule.StringLengthRangeValidationRule
 
 /**
  * Represents a validated task status name within the domain.
@@ -11,7 +8,7 @@ import com.y9vad9.ktiny.kotlidator.rule.StringLengthRangeValidationRule
  * This value class encapsulates a [String] and ensures it adheres to the defined length constraints.
  * It also provides helper methods to determine whether the name corresponds to a built-in status.
  *
- * Use [factory] to create validated instances of [TaskStatusName].
+ * Use [create] or [createOrThrow] to create validated instances of [TaskStatusName].
  *
  * @property string The underlying string value representing the status name.
  */
@@ -30,7 +27,7 @@ value class TaskStatusName private constructor(
         val LENGTH_RANGE: IntRange = MIN_LENGTH..MAX_LENGTH
 
         /** Built-in status name representing a planned task. */
-        val PLANNED: TaskStatusName = TaskStatusName("Planed")
+        val PLANNED: TaskStatusName = TaskStatusName("Planned")
 
         /** Built-in status name representing a task in progress. */
         val IN_PROGRESS: TaskStatusName = TaskStatusName("In Progress")
@@ -50,15 +47,28 @@ value class TaskStatusName private constructor(
             PLANNED, IN_PROGRESS, PAUSED, DONE,
         )
 
-        /**
-         * A [ValueFactory] for safely constructing validated instances of [TaskStatusName].
-         *
-         * Applies string length validation and enforces immutability.
-         */
-        val factory: ValueFactory<TaskStatusName, String> = factory(
-            rules = listOf(StringLengthRangeValidationRule(LENGTH_RANGE)),
-            constructor = { TaskStatusName(it) },
-        )
+        fun create(value: String): CreationResult {
+            return when {
+                value.length !in LENGTH_RANGE -> CreationResult.InvalidLength
+                else -> CreationResult.Success(TaskStatusName(value))
+            }
+        }
+
+        fun createOrThrow(value: String): TaskStatusName {
+            return when (val result = create(value)) {
+                is CreationResult.Success ->
+                    result.taskStatusName
+                is CreationResult.InvalidLength ->
+                    throw IllegalArgumentException("Task status name length must be between $MIN_LENGTH and " +
+                        "$MAX_LENGTH characters.")
+            }
+        }
+    }
+
+    sealed interface CreationResult {
+        @JvmInline
+        value class Success(val taskStatusName: TaskStatusName) : CreationResult
+        data object InvalidLength : CreationResult
     }
 
     /**

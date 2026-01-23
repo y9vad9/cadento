@@ -1,6 +1,5 @@
 package app.timemate.client.build.conventions.feature
 
-import gradle.kotlin.dsl.accessors._966ecc2ba0326bde76ac5b033d6ec0f7.kover
 import kotlinx.kover.gradle.plugin.dsl.AggregationType
 import kotlinx.kover.gradle.plugin.dsl.CoverageUnit
 import org.gradle.accessors.dm.LibrariesForLibs
@@ -13,10 +12,6 @@ plugins {
 }
 
 val libs = the<LibrariesForLibs>()
-
-dependencies {
-    commonMainApi(libs.y9vad9.ktiny.kotlidator)
-}
 
 kover {
     reports {

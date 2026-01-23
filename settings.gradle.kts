@@ -39,7 +39,3 @@ include(
     ":feature:timers:presentation:compose-ui",
     ":feature:timers:dependencies",
 )
-
-include(
-    ":foundation:validation-ext",
-)

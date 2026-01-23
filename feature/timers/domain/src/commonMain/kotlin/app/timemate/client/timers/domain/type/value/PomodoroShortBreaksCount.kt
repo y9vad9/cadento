@@ -1,8 +1,5 @@
 package app.timemate.client.timers.domain.type.value
 
-import com.y9vad9.ktiny.kotlidator.ValueFactory
-import com.y9vad9.ktiny.kotlidator.factory
-import com.y9vad9.ktiny.kotlidator.rule.MinValueValidationRule
 import kotlin.jvm.JvmInline
 
 @JvmInline
@@ -12,9 +9,26 @@ value class PomodoroShortBreaksCount private constructor(
     companion object Companion {
         const val MIN_VALUE: Int = 0
 
-        val factory: ValueFactory<PomodoroShortBreaksCount, Int> = factory(
-            rules = listOf(MinValueValidationRule(MIN_VALUE)),
-            constructor = { PomodoroShortBreaksCount(it) },
-        )
+        fun create(value: Int): CreationResult {
+            return if (value < MIN_VALUE) {
+                CreationResult.Negative
+            } else {
+                CreationResult.Success(PomodoroShortBreaksCount(value))
+            }
+        }
+
+        fun createOrThrow(value: Int): PomodoroShortBreaksCount {
+            return when (val result = create(value)) {
+                is CreationResult.Success -> result.count
+                is CreationResult.Negative ->
+                    throw IllegalArgumentException("Pomodoro short breaks count cannot be negative.")
+            }
+        }
+    }
+
+    sealed interface CreationResult {
+        @JvmInline
+        value class Success(val count: PomodoroShortBreaksCount) : CreationResult
+        data object Negative : CreationResult
     }
 }

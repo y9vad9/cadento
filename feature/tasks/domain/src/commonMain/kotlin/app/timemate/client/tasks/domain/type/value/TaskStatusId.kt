@@ -1,19 +1,30 @@
 package app.timemate.client.tasks.domain.type.value
 
-import com.y9vad9.ktiny.kotlidator.ValueFactory
 import kotlin.jvm.JvmInline
-import com.y9vad9.ktiny.kotlidator.factory
-import com.y9vad9.ktiny.kotlidator.rule.MinValueValidationRule
 
 @JvmInline
 value class TaskStatusId private constructor(
     val long: Long,
 ) {
     companion object {
-        val factory: ValueFactory<TaskStatusId, Long> = factory(
-            rules = listOf(MinValueValidationRule(-4)),
-            constructor = { TaskStatusId(it) },
-        )
+        const val MIN_VALUE: Long = -4
+
+        fun create(value: Long): CreationResult {
+            return if (value < MIN_VALUE) {
+                CreationResult.TooSmall
+            } else {
+                CreationResult.Success(TaskStatusId(value))
+            }
+        }
+
+        fun createOrThrow(value: Long): TaskStatusId {
+            return when (val result = create(value)) {
+                is CreationResult.Success ->
+                    result.taskStatusId
+                is CreationResult.TooSmall ->
+                    throw IllegalArgumentException("Task status ID cannot be less than $MIN_VALUE.")
+            }
+        }
 
         val PLANNED: TaskStatusId = TaskStatusId(-4)
         val IN_PROGRESS: TaskStatusId = TaskStatusId(-3)
@@ -23,6 +34,12 @@ value class TaskStatusId private constructor(
         val BUILTIN_IDS: List<TaskStatusId> = listOf(
             PLANNED, IN_PROGRESS, PAUSED, DONE,
         )
+    }
+
+    sealed interface CreationResult {
+        @JvmInline
+        value class Success(val taskStatusId: TaskStatusId) : CreationResult
+        data object TooSmall : CreationResult
     }
 
     fun isNotBuiltin(): Boolean = this !in BUILTIN_IDS

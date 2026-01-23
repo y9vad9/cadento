@@ -1,11 +1,7 @@
 package app.timemate.client.timers.domain.type.value
 
 import app.timemate.client.timers.domain.type.state.PomodoroTimerState
-import com.y9vad9.ktiny.kotlidator.ValueFactory
-import com.y9vad9.ktiny.kotlidator.factory
-import com.y9vad9.ktiny.kotlidator.rule.MinValueValidationRule
 import kotlin.jvm.JvmInline
-
 
 /**
  * Represents the count of short breaks that have occurred since the most recent reset point
@@ -15,19 +11,38 @@ import kotlin.jvm.JvmInline
  * or a [PomodoroTimerState.Inactive] state, after which the current streak of short breaks
  * is tracked.
  *
- * This value class encapsulates the number of consecutive short breaks taken since that reset,
- * enforcing an upper bound on the streak size to avoid excessive memory or performance costs.
+ * This value class encapsulates the number of consecutive short breaks taken since that reset.
  *
- * @property int The number of short breaks since the last reset. Guaranteed to be less than or equal to [MAX_ENTRIES].
+ * @property int The number of short breaks since the last reset.
  */
 @JvmInline
 value class PomodoroShortBreaksCountSinceBreakReset private constructor(
     val int: Int,
 ) {
     companion object Companion {
-        val factory: ValueFactory<PomodoroShortBreaksCountSinceBreakReset, Int> = factory(
-            rules = listOf(MinValueValidationRule(0)),
-            constructor = ::PomodoroShortBreaksCountSinceBreakReset,
-        )
+        const val MIN_VALUE: Int = 0
+
+        fun create(value: Int): CreationResult {
+            return if (value < MIN_VALUE) {
+                CreationResult.Negative
+            } else {
+                CreationResult.Success(PomodoroShortBreaksCountSinceBreakReset(value))
+            }
+        }
+
+        fun createOrThrow(value: Int): PomodoroShortBreaksCountSinceBreakReset {
+            return when (val result = create(value)) {
+                is CreationResult.Success ->
+                    result.count
+                is CreationResult.Negative ->
+                    throw IllegalArgumentException("Pomodoro short breaks count since reset cannot be negative.")
+            }
+        }
+    }
+
+    sealed interface CreationResult {
+        @JvmInline
+        value class Success(val count: PomodoroShortBreaksCountSinceBreakReset) : CreationResult
+        data object Negative : CreationResult
     }
 }

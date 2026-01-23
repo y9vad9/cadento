@@ -9,7 +9,6 @@ import app.timemate.client.tasks.domain.type.isPaused
 import app.timemate.client.tasks.domain.type.isPlanned
 import app.timemate.client.tasks.domain.type.value.TaskStatusId
 import app.timemate.client.tasks.domain.type.value.TaskStatusName
-import com.y9vad9.ktiny.kotlidator.createOrThrow
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -18,8 +17,8 @@ import kotlin.test.assertFailsWith
 
 class TaskStatusTest {
 
-    private val customId = TaskStatusId.factory.createOrThrow(9999L)
-    private val customName = TaskStatusName.factory.createOrThrow("CustomStatus")
+    private val customId = TaskStatusId.createOrThrow(9999L)
+    private val customName = TaskStatusName.createOrThrow("CustomStatus")
 
     @Test
     fun `from returns builtin instances for all builtin ids`() {

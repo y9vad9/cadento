@@ -1,12 +1,12 @@
-package app.timemate.client.timers.domain.test.type.value
+package app.timemate.client.tasks.domain.test.type.value
 
-import app.timemate.client.timers.domain.type.value.TimerId
+import app.timemate.client.tasks.domain.type.value.TaskId
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertIs
 
-class TimerIdTest {
+class TaskIdTest {
 
     @Test
     fun `create returns Success for valid positive ID`() {
@@ -14,11 +14,11 @@ class TimerIdTest {
         val id = 1L
 
         // WHEN
-        val result = TimerId.create(id)
+        val result = TaskId.create(id)
 
         // THEN
-        assertIs<TimerId.CreationResult.Success>(result)
-        assertEquals(id, result.timerId.long)
+        assertIs<TaskId.CreationResult.Success>(result)
+        assertEquals(id, result.taskId.long)
     }
 
     @Test
@@ -27,11 +27,11 @@ class TimerIdTest {
         val id = 0L
 
         // WHEN
-        val result = TimerId.create(id)
+        val result = TaskId.create(id)
 
         // THEN
-        assertIs<TimerId.CreationResult.Success>(result)
-        assertEquals(id, result.timerId.long)
+        assertIs<TaskId.CreationResult.Success>(result)
+        assertEquals(id, result.taskId.long)
     }
 
     @Test
@@ -40,22 +40,22 @@ class TimerIdTest {
         val id = -1L
 
         // WHEN
-        val result = TimerId.create(id)
+        val result = TaskId.create(id)
 
         // THEN
-        assertIs<TimerId.CreationResult.Negative>(result)
+        assertIs<TaskId.CreationResult.Negative>(result)
     }
 
     @Test
-    fun `createOrThrow returns TimerId for valid ID`() {
+    fun `createOrThrow returns TaskId for valid ID`() {
         // GIVEN
         val id = 100L
 
         // WHEN
-        val timerId = TimerId.createOrThrow(id)
+        val taskId = TaskId.createOrThrow(id)
 
         // THEN
-        assertEquals(id, timerId.long)
+        assertEquals(id, taskId.long)
     }
 
     @Test
@@ -65,7 +65,7 @@ class TimerIdTest {
 
         // WHEN / THEN
         assertFailsWith<IllegalArgumentException> {
-            TimerId.createOrThrow(id)
+            TaskId.createOrThrow(id)
         }
     }
 }

@@ -152,11 +152,6 @@ pluginClasspath-kover = { module = "org.jetbrains.kotlinx.kover:org.jetbrains.ko
 graalvm-metadata = { module = "org.graalvm.buildtools:graalvm-reachability-metadata", version.ref = "graalvm" }
 
 # ───────────────────────────────────────────────────────────────────────────────
-# Tools / Utilities
-# ───────────────────────────────────────────────────────────────────────────────
-y9vad9-ktiny-kotlidator = { module = "com.y9vad9.ktiny:kotlidator", version.require = "0.0.3" }
-
-# ───────────────────────────────────────────────────────────────────────────────
 # Detekt
 # ───────────────────────────────────────────────────────────────────────────────
 detekt-compose = { module = "io.nlopez.compose.rules:detekt", version.ref = "detekt-compose" }

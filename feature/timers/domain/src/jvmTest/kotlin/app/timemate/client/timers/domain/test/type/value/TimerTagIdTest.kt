@@ -1,94 +1,107 @@
 package app.timemate.client.timers.domain.test.type.value
 
 import app.timemate.client.timers.domain.type.tag.value.TimerTagId
-import com.y9vad9.ktiny.kotlidator.rule.MinValueValidationRule
-import com.y9vad9.ktiny.kotlidator.ValidationException
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 import kotlin.test.assertIs
-import kotlin.test.assertNotNull
-import kotlin.test.assertTrue
 
 class TimerTagIdTest {
+
     @Test
-    fun `should fail when value is less than MIN_VALUE`() {
-        // GIVEN a value less than the allowed minimum
-        val invalidValue = -1L
+    fun `create returns Success for valid positive ID`() {
+        // GIVEN
+        val id = 1L
 
-        // WHEN trying to create a TimerTagId from it
-        val result = TimerTagId.factory.create(invalidValue)
+        // WHEN
+        val result = TimerTagId.create(id)
 
-        // THEN creation should fail with a ValidationException containing MinValueValidationRule.Failure
-        val exception = result.exceptionOrNull()
-        assertNotNull(exception)
-        assertIs<ValidationException>(exception)
-        assertIs<MinValueValidationRule.Failure<Long>>(exception.failure)
+        // THEN
+        assertIs<TimerTagId.CreationResult.Success>(result)
+        assertEquals(id, result.timerTagId.long)
     }
 
     @Test
-    fun `should create TimerTagId successfully when value is equal to MIN_VALUE`() {
-        // GIVEN a value equal to the minimum allowed
+    fun `create returns Success for zero ID`() {
+        // GIVEN
+        val id = 0L
+
+        // WHEN
+        val result = TimerTagId.create(id)
+
+        // THEN
+        assertIs<TimerTagId.CreationResult.Success>(result)
+        assertEquals(id, result.timerTagId.long)
+    }
+
+    @Test
+    fun `create returns Negative for negative ID`() {
+        // GIVEN
+        val id = -1L
+
+        // WHEN
+        val result = TimerTagId.create(id)
+
+        // THEN
+        assertIs<TimerTagId.CreationResult.Negative>(result)
+    }
+
+    @Test
+    fun `createOrThrow returns TimerTagId for valid ID`() {
+        // GIVEN
+        val id = 100L
+
+        // WHEN
+        val timerTagId = TimerTagId.createOrThrow(id)
+
+        // THEN
+        assertEquals(id, timerTagId.long)
+    }
+
+    @Test
+    fun `createOrThrow throws IllegalArgumentException for negative ID`() {
+        // GIVEN
+        val id = -5L
+
+        // WHEN / THEN
+        assertFailsWith<IllegalArgumentException> {
+            TimerTagId.createOrThrow(id)
+        }
+    }
+
+    @Test
+    fun `create returns Success when value is equal to MIN_VALUE`() {
+        // GIVEN
         val value = TimerTagId.MIN_VALUE
 
-        // WHEN creating a TimerTagId from it
-        val result = TimerTagId.factory.create(value)
+        // WHEN
+        val result = TimerTagId.create(value)
 
-        // THEN creation should succeed and wrap the correct value
-        assertTrue(result.isSuccess)
-        assertEquals(value, result.getOrThrow().long)
+        // THEN
+        assertIs<TimerTagId.CreationResult.Success>(result)
+        assertEquals(value, result.timerTagId.long)
     }
 
     @Test
-    fun `should create TimerTagId successfully when value is greater than MIN_VALUE`() {
-        // GIVEN a valid positive value greater than the minimum
-        val value = TimerTagId.MIN_VALUE + 1
+    fun `create returns Negative for value less than MIN_VALUE`() {
+        // GIVEN
+        val invalidValue = TimerTagId.MIN_VALUE - 1
 
-        // WHEN creating a TimerTagId from it
-        val result = TimerTagId.factory.create(value)
+        // WHEN
+        val result = TimerTagId.create(invalidValue)
 
-        // THEN creation should succeed and wrap the correct value
-        assertTrue(result.isSuccess)
-        assertEquals(value, result.getOrThrow().long)
+        // THEN
+        assertIs<TimerTagId.CreationResult.Negative>(result)
     }
 
     @Test
-    fun `should wrap raw value into value object`() {
-        // GIVEN a valid raw value
-        val raw = 42L
+    fun `createOrThrow throws IllegalArgumentException for value less than MIN_VALUE`() {
+        // GIVEN
+        val invalidValue = TimerTagId.MIN_VALUE - 1
 
-        // WHEN creating TimerTagId
-        val result = TimerTagId.factory.create(raw)
-
-        // THEN resulting object should wrap exactly the given value
-        assertTrue(result.isSuccess)
-        assertEquals(raw, result.getOrThrow().long)
-    }
-
-    @Test
-    fun `should return failure on extreme negative value`() {
-        // GIVEN an extremely negative value
-        val raw = Long.MIN_VALUE
-
-        // WHEN creating TimerTagId
-        val result = TimerTagId.factory.create(raw)
-
-        // THEN creation should fail with MinValueValidationRule.Failure
-        val exception = result.exceptionOrNull()
-        assertNotNull(exception)
-        assertIs<ValidationException>(exception)
-        assertIs<MinValueValidationRule.Failure<Long>>(exception.failure)
-    }
-
-    @Test
-    fun `should allow Long_MAX_VALUE as valid input`() {
-        // GIVEN the maximum possible long value
-        val raw = Long.MAX_VALUE
-
-        // WHEN creating TimerTagId
-        val result = TimerTagId.factory.create(raw)
-
-        // THEN creation should succeed
-        assertTrue(result.isSuccess)
-        assertEquals(raw, result.getOrThrow().long)
+        // WHEN / THEN
+        assertFailsWith<IllegalArgumentException> {
+            TimerTagId.createOrThrow(invalidValue)
+        }
     }
 }

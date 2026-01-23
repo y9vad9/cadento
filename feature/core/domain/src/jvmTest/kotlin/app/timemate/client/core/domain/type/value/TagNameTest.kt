@@ -1,12 +1,11 @@
-package app.timemate.client.timers.domain.test.type.value
+package app.timemate.client.core.domain.type.value
 
-import app.timemate.client.timers.domain.type.tag.value.TimerTagName
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertIs
 
-class TimerTagNameTest {
+class TagNameTest {
 
     @Test
     fun `create returns Success for valid name`() {
@@ -14,11 +13,11 @@ class TimerTagNameTest {
         val validName = "My Tag"
 
         // WHEN
-        val result = TimerTagName.create(validName)
+        val result = TagName.create(validName)
 
         // THEN
-        assertIs<TimerTagName.CreationResult.Success>(result)
-        assertEquals(validName, result.timerTagName.string)
+        assertIs<TagName.CreationResult.Success>(result)
+        assertEquals(validName, result.tagName.string)
     }
 
     @Test
@@ -27,24 +26,24 @@ class TimerTagNameTest {
         val minName = "A"
 
         // WHEN
-        val result = TimerTagName.create(minName)
+        val result = TagName.create(minName)
 
         // THEN
-        assertIs<TimerTagName.CreationResult.Success>(result)
-        assertEquals(minName, result.timerTagName.string)
+        assertIs<TagName.CreationResult.Success>(result)
+        assertEquals(minName, result.tagName.string)
     }
 
     @Test
     fun `create returns Success for name with maximum length`() {
         // GIVEN
-        val maxName = "a".repeat(50)
+        val maxName = "a".repeat(TagName.MAX_LENGTH)
 
         // WHEN
-        val result = TimerTagName.create(maxName)
+        val result = TagName.create(maxName)
 
         // THEN
-        assertIs<TimerTagName.CreationResult.Success>(result)
-        assertEquals(maxName, result.timerTagName.string)
+        assertIs<TagName.CreationResult.Success>(result)
+        assertEquals(maxName, result.tagName.string)
     }
 
     @Test
@@ -53,31 +52,31 @@ class TimerTagNameTest {
         val emptyName = ""
 
         // WHEN
-        val result = TimerTagName.create(emptyName)
+        val result = TagName.create(emptyName)
 
         // THEN
-        assertIs<TimerTagName.CreationResult.Empty>(result)
+        assertIs<TagName.CreationResult.Empty>(result)
     }
 
     @Test
     fun `create returns TooLong for name exceeding max length`() {
         // GIVEN
-        val tooLongName = "a".repeat(51)
+        val tooLongName = "a".repeat(TagName.MAX_LENGTH + 1)
 
         // WHEN
-        val result = TimerTagName.create(tooLongName)
+        val result = TagName.create(tooLongName)
 
         // THEN
-        assertIs<TimerTagName.CreationResult.TooLong>(result)
+        assertIs<TagName.CreationResult.TooLong>(result)
     }
 
     @Test
-    fun `createOrThrow returns TimerTagName for valid name`() {
+    fun `createOrThrow returns TagName for valid name`() {
         // GIVEN
         val name = "Valid Tag Name"
 
         // WHEN
-        val tagName = TimerTagName.createOrThrow(name)
+        val tagName = TagName.createOrThrow(name)
 
         // THEN
         assertEquals(name, tagName.string)
@@ -90,21 +89,21 @@ class TimerTagNameTest {
 
         // WHEN / THEN
         assertFailsWith<IllegalArgumentException> {
-            TimerTagName.createOrThrow(invalidName)
+            TagName.createOrThrow(invalidName)
         }
     }
 
     @Test
     fun `create returns Success for alphanumeric and symbols within limit`() {
         // GIVEN
-        val input = "Task#42: Übung_@home!"
+        val input = "Tag#42: Übung_@home!"
 
         // WHEN
-        val result = TimerTagName.create(input)
+        val result = TagName.create(input)
 
         // THEN
-        assertIs<TimerTagName.CreationResult.Success>(result)
-        assertEquals(input, result.timerTagName.string)
+        assertIs<TagName.CreationResult.Success>(result)
+        assertEquals(input, result.tagName.string)
     }
 
     @Test
@@ -113,10 +112,10 @@ class TimerTagNameTest {
         val input = " ".repeat(0) // Empty string, not just whitespaces
 
         // WHEN
-        val result = TimerTagName.create(input)
+        val result = TagName.create(input)
 
         // THEN
-        assertIs<TimerTagName.CreationResult.Empty>(result)
+        assertIs<TagName.CreationResult.Empty>(result)
     }
 
     @Test
@@ -125,10 +124,10 @@ class TimerTagNameTest {
         val input = " "
 
         // WHEN
-        val result = TimerTagName.create(input)
+        val result = TagName.create(input)
 
         // THEN
-        assertIs<TimerTagName.CreationResult.Success>(result)
-        assertEquals(input, result.timerTagName.string)
+        assertIs<TagName.CreationResult.Success>(result)
+        assertEquals(input, result.tagName.string)
     }
 }

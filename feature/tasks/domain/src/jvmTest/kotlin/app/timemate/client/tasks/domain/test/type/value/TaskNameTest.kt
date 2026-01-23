@@ -1,4 +1,4 @@
-package app.timemate.client.tasks.domain.tests.type.value
+package app.timemate.client.tasks.domain.test.type.value
 
 import app.timemate.client.tasks.domain.type.value.TaskName
 import kotlin.test.Test

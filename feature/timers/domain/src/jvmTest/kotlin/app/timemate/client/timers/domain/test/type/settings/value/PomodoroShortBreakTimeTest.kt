@@ -1,103 +1,98 @@
 package app.timemate.client.timers.domain.test.type.settings.value
 
 import app.timemate.client.timers.domain.type.settings.value.PomodoroShortBreakTime
-import com.y9vad9.ktiny.kotlidator.ValidationException
-import com.y9vad9.ktiny.kotlidator.createOrThrow
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
-import kotlin.test.assertTrue
-import kotlin.time.Duration
+import kotlin.test.assertIs
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 
 class PomodoroShortBreakTimeTest {
 
     @Test
-    fun `createOrThrow returns valid instance for allowed duration`() {
+    fun `create returns Success for valid duration`() {
         // GIVEN
-        val validDuration: Duration = 10.minutes
+        val duration = 5.minutes
 
         // WHEN
-        val result = PomodoroShortBreakTime.factory.createOrThrow(validDuration)
+        val result = PomodoroShortBreakTime.create(duration)
 
         // THEN
-        assertEquals(
-            actual = result.duration,
-            expected = validDuration,
-            message = "The stored duration should match the input",
-        )
+        assertIs<PomodoroShortBreakTime.CreationResult.Success>(result)
+        assertEquals(duration, result.time.duration)
     }
 
     @Test
-    fun `createOrThrow throws for duration less than minimum`() {
+    fun `create returns Success for min duration`() {
         // GIVEN
-        val invalidDuration: Duration = 30.seconds
+        val duration = 1.minutes
 
-        // WHEN & THEN
-        assertFailsWith<ValidationException> {
-            PomodoroShortBreakTime.factory.createOrThrow(invalidDuration)
+        // WHEN
+        val result = PomodoroShortBreakTime.create(duration)
+
+        // THEN
+        assertIs<PomodoroShortBreakTime.CreationResult.Success>(result)
+        assertEquals(duration, result.time.duration)
+    }
+
+    @Test
+    fun `create returns Success for max duration`() {
+        // GIVEN
+        val duration = 20.minutes
+
+        // WHEN
+        val result = PomodoroShortBreakTime.create(duration)
+
+        // THEN
+        assertIs<PomodoroShortBreakTime.CreationResult.Success>(result)
+        assertEquals(duration, result.time.duration)
+    }
+
+    @Test
+    fun `create returns TooShort for duration below min`() {
+        // GIVEN
+        val duration = 59.seconds
+
+        // WHEN
+        val result = PomodoroShortBreakTime.create(duration)
+
+        // THEN
+        assertIs<PomodoroShortBreakTime.CreationResult.TooShort>(result)
+    }
+
+    @Test
+    fun `create returns TooLong for duration above max`() {
+        // GIVEN
+        val duration = 20.minutes + 1.seconds
+
+        // WHEN
+        val result = PomodoroShortBreakTime.create(duration)
+
+        // THEN
+        assertIs<PomodoroShortBreakTime.CreationResult.TooLong>(result)
+    }
+
+    @Test
+    fun `createOrThrow returns PomodoroShortBreakTime for valid duration`() {
+        // GIVEN
+        val duration = 10.minutes
+
+        // WHEN
+        val time = PomodoroShortBreakTime.createOrThrow(duration)
+
+        // THEN
+        assertEquals(duration, time.duration)
+    }
+
+    @Test
+    fun `createOrThrow throws IllegalArgumentException for invalid duration`() {
+        // GIVEN
+        val duration = 30.minutes
+
+        // WHEN / THEN
+        assertFailsWith<IllegalArgumentException> {
+            PomodoroShortBreakTime.createOrThrow(duration)
         }
-    }
-
-    @Test
-    fun `createOrThrow throws for duration greater than maximum`() {
-        // GIVEN
-        val invalidDuration: Duration = 21.minutes
-
-        // WHEN & THEN
-        assertFailsWith<ValidationException> {
-            PomodoroShortBreakTime.factory.createOrThrow(invalidDuration)
-        }
-    }
-
-    @Test
-    fun `create returns failure Result for duration less than minimum`() {
-        // GIVEN
-        val invalidDuration: Duration = 30.seconds
-
-        // WHEN
-        val result = PomodoroShortBreakTime.factory.create(invalidDuration)
-
-        // THEN
-        assertTrue(
-            actual = result.isFailure,
-            message = "Result should be failure for invalid duration",
-        )
-    }
-
-    @Test
-    fun `create returns failure Result for duration greater than maximum`() {
-        // GIVEN
-        val invalidDuration: Duration = 25.minutes
-
-        // WHEN
-        val result = PomodoroShortBreakTime.factory.create(invalidDuration)
-
-        // THEN
-        assertTrue(
-            actual = result.isFailure,
-            message = "Result should be failure for invalid duration",
-        )
-    }
-
-    @Test
-    fun `create returns success Result for duration within allowed range`() {
-        // GIVEN
-        val validDuration: Duration = 5.minutes
-
-        // WHEN
-        val result = PomodoroShortBreakTime.factory.create(validDuration)
-
-        // THEN
-        assertTrue(
-            actual = result.isSuccess,
-            message = "Result should be success for valid duration",
-        )
-        assertEquals(
-            actual = result.getOrThrow().duration,
-            expected = validDuration,
-            message = "The stored duration should match input",
-        )
     }
 }
