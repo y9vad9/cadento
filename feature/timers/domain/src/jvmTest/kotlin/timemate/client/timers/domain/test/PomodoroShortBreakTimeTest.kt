@@ -95,4 +95,26 @@ class PomodoroShortBreakTimeTest {
             PomodoroShortBreakTime.createOrThrow(duration)
         }
     }
+
+    @Test
+    fun `duration property should return value passed to constructor`() {
+        // GIVEN
+        val duration = 5.minutes
+        val shortBreakTime = PomodoroShortBreakTime.createOrThrow(duration)
+
+        // WHEN
+        val result = shortBreakTime.duration
+
+        // THEN
+        assertEquals(duration, result)
+    }
+
+    @Test
+    fun `TIME_RANGE property should return correct time range`() {
+        // WHEN
+        val timeRange = PomodoroShortBreakTime.TIME_RANGE
+
+        // THEN
+        assertEquals(1.minutes..20.minutes, timeRange)
+    }
 }

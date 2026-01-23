@@ -95,4 +95,26 @@ class PomodoroConfirmationTimeoutTimeTest {
             PomodoroConfirmationTimeoutTime.createOrThrow(duration)
         }
     }
+
+    @Test
+    fun `duration property should return value passed to constructor`() {
+        // GIVEN
+        val duration = 30.seconds
+        val timeoutTime = PomodoroConfirmationTimeoutTime.createOrThrow(duration)
+
+        // WHEN
+        val result = timeoutTime.duration
+
+        // THEN
+        assertEquals(duration, result)
+    }
+
+    @Test
+    fun `TIME_RANGE property should return correct time range`() {
+        // WHEN
+        val timeRange = PomodoroConfirmationTimeoutTime.TIME_RANGE
+
+        // THEN
+        assertEquals(5.seconds..5.minutes, timeRange)
+    }
 }

@@ -93,4 +93,17 @@ class TaskDescriptionTest {
             TaskDescription.createOrThrow(invalidDescription)
         }
     }
+
+    @Test
+    fun `string property should return value passed to constructor`() {
+        // GIVEN
+        val descriptionValue = "This is a test description."
+        val taskDescription = TaskDescription.createOrThrow(descriptionValue)
+
+        // WHEN
+        val result = taskDescription.string
+
+        // THEN
+        assertEquals(descriptionValue, result)
+    }
 }

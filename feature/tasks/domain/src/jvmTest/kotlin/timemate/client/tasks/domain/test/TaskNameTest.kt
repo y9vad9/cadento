@@ -93,4 +93,17 @@ class TaskNameTest {
             TaskName.createOrThrow(invalidName)
         }
     }
+
+    @Test
+    fun `string property should return value passed to constructor`() {
+        // GIVEN
+        val nameValue = "Test Task"
+        val taskName = TaskName.createOrThrow(nameValue)
+
+        // WHEN
+        val result = taskName.string
+
+        // THEN
+        assertEquals(nameValue, result)
+    }
 }

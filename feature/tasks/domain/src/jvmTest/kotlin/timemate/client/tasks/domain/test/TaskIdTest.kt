@@ -68,4 +68,17 @@ class TaskIdTest {
             TaskId.createOrThrow(id)
         }
     }
+
+    @Test
+    fun `long property should return value passed to constructor`() {
+        // GIVEN
+        val idValue = 123L
+        val taskId = TaskId.createOrThrow(idValue)
+
+        // WHEN
+        val result = taskId.long
+
+        // THEN
+        assertEquals(idValue, result)
+    }
 }

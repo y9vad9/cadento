@@ -131,4 +131,17 @@ class TimerTagNameTest {
         assertIs<TimerTagName.CreationResult.Success>(result)
         assertEquals(input, result.timerTagName.string)
     }
+
+    @Test
+    fun `string property should return value passed to constructor`() {
+        // GIVEN
+        val nameValue = "Tag Name"
+        val timerTagName = TimerTagName.createOrThrow(nameValue)
+
+        // WHEN
+        val result = timerTagName.string
+
+        // THEN
+        assertEquals(nameValue, result)
+    }
 }

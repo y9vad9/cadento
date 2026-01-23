@@ -5,8 +5,8 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertIs
-import kotlin.test.assertTrue
 import kotlin.test.assertFalse
+import kotlin.test.assertContains
 
 class TaskStatusIdTest {
 
@@ -92,7 +92,7 @@ class TaskStatusIdTest {
 
         // WHEN / THEN
         builtIns.forEach { id ->
-            assertTrue(id.isBuiltin(), "Expected $id to be builtin")
+            assert(id.isBuiltin()) { "Expected $id to be builtin" }
         }
     }
 
@@ -111,7 +111,7 @@ class TaskStatusIdTest {
         val customId = TaskStatusId.createOrThrow(0L)
 
         // WHEN / THEN
-        assertTrue(customId.isNotBuiltin())
+        assert(customId.isNotBuiltin())
     }
 
     @Test
@@ -121,5 +121,31 @@ class TaskStatusIdTest {
 
         // WHEN / THEN
         assertFalse(builtIn.isNotBuiltin())
+    }
+
+    @Test
+    fun `long property should return value passed to constructor`() {
+        // GIVEN
+        val idValue = 5L
+        val taskStatusId = TaskStatusId.createOrThrow(idValue)
+
+        // WHEN
+        val result = taskStatusId.long
+
+        // THEN
+        assertEquals(idValue, result)
+    }
+
+    @Test
+    fun `BUILTIN_IDS should contain all predefined TaskStatusIds`() {
+        // WHEN
+        val builtinIds = TaskStatusId.BUILTIN_IDS
+
+        // THEN
+        assertEquals(4, builtinIds.size)
+        assertContains(builtinIds, TaskStatusId.PLANNED)
+        assertContains(builtinIds, TaskStatusId.IN_PROGRESS)
+        assertContains(builtinIds, TaskStatusId.PAUSED)
+        assertContains(builtinIds, TaskStatusId.DONE)
     }
 }

@@ -96,4 +96,26 @@ class PomodoroLongBreakTimeTest {
             PomodoroLongBreakTime.createOrThrow(duration)
         }
     }
+
+    @Test
+    fun `duration property should return value passed to constructor`() {
+        // GIVEN
+        val duration = 15.minutes
+        val longBreakTime = PomodoroLongBreakTime.createOrThrow(duration)
+
+        // WHEN
+        val result = longBreakTime.duration
+
+        // THEN
+        assertEquals(duration, result)
+    }
+
+    @Test
+    fun `TIME_RANGE property should return correct time range`() {
+        // WHEN
+        val timeRange = PomodoroLongBreakTime.TIME_RANGE
+
+        // THEN
+        assertEquals(3.minutes..1.hours, timeRange)
+    }
 }

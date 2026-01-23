@@ -6,6 +6,7 @@ import timemate.client.timers.domain.PomodoroConfirmationTimeoutTime
 import timemate.client.timers.domain.PomodoroLongBreakTime
 import timemate.client.timers.domain.PomodoroPreparationTime
 import timemate.client.timers.domain.PomodoroShortBreakTime
+import timemate.client.timers.domain.PomodoroFocusTime
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
@@ -128,5 +129,20 @@ class PomodoroTimerSettingsTest {
 
         // THEN
         assertFalse(updated.isLongBreakEnabled)
+    }
+
+    @Test
+    fun `updateFocusAndShortBreak should update focus and short break times`() {
+        // GIVEN
+        val initialSettings = validSettings()
+        val newFocusTime = PomodoroFocusTime.createOrThrow(30.minutes)
+        val newShortBreakTime = PomodoroShortBreakTime.createOrThrow(5.minutes)
+
+        // WHEN
+        val updatedSettings = initialSettings.updateFocusAndShortBreak(newFocusTime, newShortBreakTime)
+
+        // THEN
+        assertEquals(newFocusTime.duration, updatedSettings.pomodoroFocusTime.duration)
+        assertEquals(newShortBreakTime.duration, updatedSettings.pomodoroShortBreakTime.duration)
     }
 }

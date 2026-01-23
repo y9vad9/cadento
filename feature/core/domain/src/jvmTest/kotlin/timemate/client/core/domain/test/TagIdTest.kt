@@ -104,4 +104,17 @@ class TagIdTest {
             TagId.createOrThrow(invalidValue)
         }
     }
+
+    @Test
+    fun `long property should return value passed to constructor`() {
+        // GIVEN
+        val idValue = 111L
+        val tagId = TagId.createOrThrow(idValue)
+
+        // WHEN
+        val result = tagId.long
+
+        // THEN
+        assertEquals(idValue, result)
+    }
 }

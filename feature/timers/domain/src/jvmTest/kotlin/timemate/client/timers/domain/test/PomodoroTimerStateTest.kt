@@ -17,7 +17,9 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertIs
 import kotlin.time.Duration.Companion.minutes
+import kotlin.time.Duration.Companion.seconds
 import kotlin.time.Instant
+import kotlin.time.Clock
 
 class PomodoroTimerStateTest {
     // it's okay here to have a long list of parameters – it's a testing method
@@ -685,5 +687,42 @@ class PomodoroTimerStateTest {
             expected = PomodoroTimerState.Paused(at),
             actual = transition.nextState,
         )
+    }
+
+    @Test
+    fun `AwaitsConfirmation terminate should transition to Paused state`() {
+        // GIVEN
+        val now = Clock.System.now()
+        val state = PomodoroTimerState.AwaitsConfirmation(now, now + 1.minutes)
+
+        // WHEN
+        val transition = state.terminate(now + 30.seconds)
+
+        // THEN
+        assertIs<PomodoroTimerState.Paused>(transition.nextState)
+    }
+
+    @Test
+    fun `AwaitsConfirmation onExpiration should transition to next appropriate state`() {
+        // GIVEN
+        val now = Clock.System.now()
+        val state = PomodoroTimerState.AwaitsConfirmation(now, now + 1.minutes)
+        val settings = createSettings(
+            isLongBreakEnabled = false,
+            longBreakPer = 2,
+            focusTimeMinutes = 25,
+            shortBreakDurationMinutes = 5,
+            longBreakDurationMinutes = 15,
+            requiresConfirmationBeforeStart = false,
+            isPreparationStateEnabled = false,
+            confirmationTimeoutMinutes = 1,
+            preparationDurationMinutes = 2
+        )
+
+        // WHEN
+        val newState = state.onExpiration(settings)
+
+        // THEN
+        assertIs<PomodoroTimerState.Focus>(newState)
     }
 }

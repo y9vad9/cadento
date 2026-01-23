@@ -104,4 +104,17 @@ class TimerTagIdTest {
             TimerTagId.createOrThrow(invalidValue)
         }
     }
+
+    @Test
+    fun `long property should return value passed to constructor`() {
+        // GIVEN
+        val idValue = 987L
+        val timerTagId = TimerTagId.createOrThrow(idValue)
+
+        // WHEN
+        val result = timerTagId.long
+
+        // THEN
+        assertEquals(idValue, result)
+    }
 }

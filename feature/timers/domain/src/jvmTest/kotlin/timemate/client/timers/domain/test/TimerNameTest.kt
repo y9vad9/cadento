@@ -93,4 +93,17 @@ class TimerNameTest {
             TimerName.createOrThrow(invalidName)
         }
     }
+
+    @Test
+    fun `string property should return value passed to constructor`() {
+        // GIVEN
+        val nameValue = "Test Timer"
+        val timerName = TimerName.createOrThrow(nameValue)
+
+        // WHEN
+        val result = timerName.string
+
+        // THEN
+        assertEquals(nameValue, result)
+    }
 }

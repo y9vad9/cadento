@@ -93,4 +93,17 @@ class LinkedTaskNameTest {
             LinkedTaskName.createOrThrow(invalidName)
         }
     }
+
+    @Test
+    fun `string property should return value passed to constructor`() {
+        // GIVEN
+        val nameValue = "Linked Task Name"
+        val linkedTaskName = LinkedTaskName.createOrThrow(nameValue)
+
+        // WHEN
+        val result = linkedTaskName.string
+
+        // THEN
+        assertEquals(nameValue, result)
+    }
 }

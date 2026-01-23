@@ -5,6 +5,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertIs
+import kotlin.test.assertContains
 
 class TaskStatusNameTest {
 
@@ -134,5 +135,31 @@ class TaskStatusNameTest {
 
         // WHEN / THEN
         assertEquals(false, planned.isNotBuiltin())
+    }
+
+    @Test
+    fun `string property should return value passed to constructor`() {
+        // GIVEN
+        val nameValue = "In Progress"
+        val taskStatusName = TaskStatusName.createOrThrow(nameValue)
+
+        // WHEN
+        val result = taskStatusName.string
+
+        // THEN
+        assertEquals(nameValue, result)
+    }
+
+    @Test
+    fun `BUILTIN_NAMES should contain all predefined TaskStatusNames`() {
+        // WHEN
+        val builtinNames = TaskStatusName.BUILTIN_NAMES
+
+        // THEN
+        assertEquals(4, builtinNames.size)
+        assertContains(builtinNames, TaskStatusName.PLANNED)
+        assertContains(builtinNames, TaskStatusName.IN_PROGRESS)
+        assertContains(builtinNames, TaskStatusName.PAUSED)
+        assertContains(builtinNames, TaskStatusName.DONE)
     }
 }

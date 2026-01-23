@@ -68,4 +68,17 @@ class PomodoroLongBreakPerShortBreaksCountTest {
             PomodoroLongBreakPerShortBreaksCount.createOrThrow(count)
         }
     }
+
+    @Test
+    fun `int property should return value passed to constructor`() {
+        // GIVEN
+        val count = 4
+        val longBreakCount = PomodoroLongBreakPerShortBreaksCount.createOrThrow(count)
+
+        // WHEN
+        val result = longBreakCount.int
+
+        // THEN
+        assertEquals(count, result)
+    }
 }

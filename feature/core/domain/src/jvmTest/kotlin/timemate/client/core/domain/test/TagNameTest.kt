@@ -97,7 +97,7 @@ class TagNameTest {
     @Test
     fun `createOrThrow throws IllegalArgumentException for too long name`() {
         // GIVEN
-        val invalidName = "x".repeat(1000)
+        val invalidName = "x".repeat(TagName.MAX_LENGTH + 1)
 
         // WHEN / THEN
         assertFailsWith<IllegalArgumentException> {
@@ -141,5 +141,27 @@ class TagNameTest {
         // THEN
         assertIs<TagName.CreationResult.Success>(result)
         assertEquals(input, result.tagName.string)
+    }
+
+    @Test
+    fun `string property should return value passed to constructor`() {
+        // GIVEN
+        val nameValue = "Core Tag"
+        val tagName = TagName.createOrThrow(nameValue)
+
+        // WHEN
+        val result = tagName.string
+
+        // THEN
+        assertEquals(nameValue, result)
+    }
+
+    @Test
+    fun `LENGTH_RANGE property should return correct length range`() {
+        // WHEN
+        val lengthRange = TagName.LENGTH_RANGE
+
+        // THEN
+        assertEquals(1..50, lengthRange)
     }
 }
