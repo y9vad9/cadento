@@ -50,6 +50,9 @@ class FeatureNamespace internal constructor(
     /** Convention plugin for domain-layer setup in feature modules. */
     val domain: String = "timemate.client.gradle.convention.feature.domain-convention",
 
+    /** Convention plugin for application-layer setup in feature modules. */
+    val application: String = "timemate.client.gradle.convention.feature.application-convention",
+
     /** Convention plugins related to integration-layer concerns like database, network, etc. */
     val integration: String = "timemate.client.gradle.convention.feature.integration-convention",
 

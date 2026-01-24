@@ -28,6 +28,7 @@ xerial-sqlite-jdbc = "3.51.1.0"
 h2-database = "2.4.240"
 accompanist = "0.32.0"
 androidx-performance-annotation = "1.0.0-alpha01"
+turbine = "1.2.1"
 
 [libraries]
 # ───────────────────────────────────────────────────────────────────────────────
@@ -53,6 +54,7 @@ ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 kotlin-test-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }
 mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
+turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
 
 # ───────────────────────────────────────────────────────────────────────────────
 # SQLDelight / Database
