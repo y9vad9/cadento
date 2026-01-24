@@ -1,4 +1,4 @@
-package timemate.uikit.icon
+package timemate.uikit
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocal

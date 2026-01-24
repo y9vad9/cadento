@@ -1,7 +1,7 @@
 package timemate.uikit.material.icon
 
 import androidx.compose.ui.graphics.vector.ImageVector
-import timemate.uikit.icon.Icons
+import timemate.uikit.Icons
 
 public object MaterialIcons : Icons {
     override val add: ImageVector get() = GeneratedMaterialIcons.AddRounded

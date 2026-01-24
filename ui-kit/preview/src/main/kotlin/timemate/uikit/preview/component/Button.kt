@@ -16,7 +16,7 @@ import timemate.uikit.component.SecondaryButton
 import timemate.uikit.component.LocalButtonStyle
 import timemate.uikit.component.ButtonStyle
 import timemate.uikit.material.component.Material3ButtonStyle
-import timemate.uikit.icon.Icons
+import timemate.uikit.Icons
 import timemate.uikit.material.icon.MaterialIcons
 import androidx.compose.runtime.CompositionLocalProvider
 
