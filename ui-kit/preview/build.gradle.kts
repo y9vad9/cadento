@@ -6,7 +6,7 @@ plugins {
 
 dependencies {
     implementation(projects.uiKit)
-    api(projects.uiKit.material3)
+    implementation(projects.uiKit.material3)
 
     implementation(libs.compose.preview)
 }

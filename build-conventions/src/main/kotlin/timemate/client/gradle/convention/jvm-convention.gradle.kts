@@ -7,27 +7,17 @@ plugins {
 kotlin {
     jvmToolchain(11)
 
-    sourceSets {
-        all {
-            sourceSets {
-                all {
-                    languageSettings.optIn("kotlin.time.ExperimentalTime")
-                    languageSettings.optIn("kotlin.uuid.ExperimentalUuidApi")
-                }
-            }
-        }
-    }
+    sourceSets.all {
+        compilerOptions {
+            languageSettings.optIn("kotlin.time.ExperimentalTime")
+            languageSettings.optIn("kotlin.uuid.ExperimentalUuidApi")
 
-    sourceSets {
-        all {
-            compilerOptions {
-                /**
-                 * We want to keep both code and build as clean as possible.
-                 * Warnings tend to grow technical debt; therefore, we avoid it by considering
-                 * warnings as errors
-                 */
-                allWarningsAsErrors = true
-            }
+            /**
+             * We want to keep both code and build as clean as possible.
+             * Warnings tend to grow technical debt; therefore, we avoid it by considering
+             * warnings as errors
+             */
+            allWarningsAsErrors = true
         }
     }
 }
