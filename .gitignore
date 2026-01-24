@@ -78,3 +78,4 @@ lint/tmp/
 
 .kotlin
 kotlin-js-store
+**/.DS_Store
