@@ -76,8 +76,9 @@ detekt {
         files("src/testFixtures/kotlin")
     )
 
-    allRules = true
     parallel = true
+
+    config.from(rootProject.file("detekt.yml"))
 }
 
 tasks.withType<Detekt>().configureEach {
