@@ -1,8 +1,6 @@
 plugins {
     java
     id(conventions.kover)
-    alias(libs.plugins.compose.compiler) apply false
-    alias(libs.plugins.compose) apply false
 }
 
 kover {

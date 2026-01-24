@@ -13,17 +13,27 @@ kotlin {
 
     jvmToolchain(11)
 
-    sourceSets.all {
-        compilerOptions {
-            languageSettings.optIn("kotlin.time.ExperimentalTime")
-            languageSettings.optIn("kotlin.uuid.ExperimentalUuidApi")
+    sourceSets {
+        all {
+            sourceSets {
+                all {
+                    languageSettings.optIn("kotlin.time.ExperimentalTime")
+                    languageSettings.optIn("kotlin.uuid.ExperimentalUuidApi")
+                }
+            }
+        }
+    }
 
-            /**
-             * We want to keep both code and build as clean as possible.
-             * Warnings tend to grow technical debt; therefore, we avoid it by considering
-             * warnings as errors
-             */
-            allWarningsAsErrors = true
+    sourceSets {
+        all {
+            compilerOptions {
+                /**
+                 * We want to keep both code and build as clean as possible.
+                 * Warnings tend to grow technical debt; therefore, we avoid it by considering
+                 * warnings as errors
+                 */
+                allWarningsAsErrors = true
+            }
         }
     }
 }
