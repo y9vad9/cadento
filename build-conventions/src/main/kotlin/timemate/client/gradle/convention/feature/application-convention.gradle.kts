@@ -2,7 +2,6 @@ package timemate.client.gradle.convention.feature
 
 import kotlinx.kover.gradle.plugin.dsl.AggregationType
 import kotlinx.kover.gradle.plugin.dsl.CoverageUnit
-import org.gradle.accessors.dm.LibrariesForLibs
 
 plugins {
     id("timemate.client.gradle.convention.detekt-convention")
@@ -10,8 +9,6 @@ plugins {
     id("timemate.client.gradle.convention.tests-convention")
     id("timemate.client.gradle.convention.kover-convention")
 }
-
-val libs = the<LibrariesForLibs>()
 
 kover {
     reports {

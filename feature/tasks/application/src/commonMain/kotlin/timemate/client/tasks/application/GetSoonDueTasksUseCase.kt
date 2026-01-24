@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.isActive
 import kotlinx.datetime.DatePeriod
 import kotlinx.datetime.DayOfWeek
@@ -29,63 +29,54 @@ import kotlin.time.Instant
 
 class GetSoonDueTasksUseCase(
     private val taskRepository: TaskRepository,
+    private val timeZoneProvider: TimeZoneProvider,
     private val clock: Clock,
 ) {
-    sealed interface Result {
-        data class Error(val error: Throwable) : Result
-        data class Success(
-            val dueTasks: List<Task>,
-            val tasksToday: List<Task>,
-            val tasksNextDay: List<Task>,
-            val tasksThisWeek: List<Task>,
-            val tasksNextWeek: List<Task>,
-        ) : Result
-    }
-
     @OptIn(ExperimentalCoroutinesApi::class)
     fun execute(): Flow<Result> {
         val forceUpdates: MutableSharedFlow<Unit> = MutableSharedFlow(replay = 1)
         forceUpdates.tryEmit(Unit)
 
-        return channelFlow<Result> {
-            while (isActive) {
-                forceUpdates.collectLatest {
-                    val now = clock.now()
-                    val timeZone = TimeZone.UTC
-                    val currentLocalDateTime = now.toLocalDateTime(timeZone)
+        return timeZoneProvider.timeZone.flatMapLatest { timeZone ->
+            channelFlow<Result> {
+                while (isActive) {
+                    forceUpdates.collectLatest {
+                        val now = clock.now()
+                        val currentLocalDateTime = now.toLocalDateTime(timeZone)
 
-                    val ranges = calculateDateRanges(currentLocalDateTime, timeZone)
+                        val ranges = calculateDateRanges(currentLocalDateTime, timeZone)
 
-                    val dueTasksFlow = taskRepository.getDueTasks(now)
-                    val todayTasksFlow = taskRepository.getTasksWithDueBetween(ranges.today)
-                    val nextDayTasksFlow = taskRepository.getTasksWithDueBetween(ranges.nextDay)
-                    val thisWeekTasksFlow = taskRepository.getTasksWithDueBetween(ranges.thisWeek)
-                    val nextWeekTasksFlow = taskRepository.getTasksWithDueBetween(ranges.nextWeek)
+                        val dueTasksFlow = taskRepository.getDueTasks(now)
+                        val todayTasksFlow = taskRepository.getTasksWithDueBetween(ranges.today)
+                        val nextDayTasksFlow = taskRepository.getTasksWithDueBetween(ranges.nextDay)
+                        val laterInWeekTasksFlow = taskRepository.getTasksWithDueBetween(ranges.laterInWeek)
+                        val nextWeekTasksFlow = taskRepository.getTasksWithDueBetween(ranges.nextWeek)
 
-                    combine(
-                        dueTasksFlow,
-                        todayTasksFlow,
-                        nextDayTasksFlow,
-                        thisWeekTasksFlow,
-                        nextWeekTasksFlow
-                    ) { dueTasks, todayTasks, nextDayTasks, thisWeekTasks, nextWeekTasks ->
-                        Result.Success(
-                            dueTasks = dueTasks,
-                            tasksToday = todayTasks,
-                            tasksNextDay = nextDayTasks,
-                            tasksThisWeek = thisWeekTasks,
-                            tasksNextWeek = nextWeekTasks
-                        )
-                    }.collectLatest { result ->
-                        send(result)
+                        combine(
+                            dueTasksFlow,
+                            todayTasksFlow,
+                            nextDayTasksFlow,
+                            laterInWeekTasksFlow,
+                            nextWeekTasksFlow
+                        ) { dueTasks, todayTasks, nextDayTasks, laterInWeekTasks, nextWeekTasks ->
+                            Result.Success(
+                                dueTasks = dueTasks,
+                                tasksToday = todayTasks,
+                                tasksNextDay = nextDayTasks,
+                                tasksLaterInWeek = laterInWeekTasks,
+                                tasksNextWeek = nextWeekTasks
+                            )
+                        }.collectLatest { result ->
+                            send(result)
 
-                        val nextTrigger = calculateNextTrigger(result, now)
-                        delay(nextTrigger)
-                        forceUpdates.emit(Unit)
+                            val nextTrigger = calculateNextTrigger(result, now)
+                            delay(nextTrigger)
+                            forceUpdates.emit(Unit)
+                        }
                     }
                 }
-            }
-        }.catch { emit(Result.Error(it)) }
+            }.catch { emit(Result.Error(it)) }
+        }
     }
 
     private fun calculateNextTrigger(result: Result.Success, now: Instant): Duration {
@@ -93,11 +84,12 @@ class GetSoonDueTasksUseCase(
             result.dueTasks,
             result.tasksToday,
             result.tasksNextDay,
-            result.tasksThisWeek,
+            result.tasksLaterInWeek,
             result.tasksNextWeek
         )
         val nextTriggerTime = allTasks
             .flatten()
+            .filter { it.dueTime > now } // Only consider future tasks
             .minOfOrNull { it.dueTime } ?: now.plus(1.days)
 
         return (nextTriggerTime - now).coerceAtLeast(1.seconds) + 100.milliseconds
@@ -106,7 +98,7 @@ class GetSoonDueTasksUseCase(
     private data class DateRanges(
         val today: ClosedRange<Instant>,
         val nextDay: ClosedRange<Instant>,
-        val thisWeek: ClosedRange<Instant>,
+        val laterInWeek: ClosedRange<Instant>,
         val nextWeek: ClosedRange<Instant>,
     )
 
@@ -122,14 +114,14 @@ class GetSoonDueTasksUseCase(
         val nextDayRange = nextDayStart..endOfNextDay
 
         val dayAfterNext = nextDayDate.plus(DatePeriod(days = 1))
-        val endOfWeekDate = dayAfterNext.plus(DatePeriod(days = DayOfWeek.SUNDAY.ordinal - dayAfterNext.dayOfWeek.ordinal))
-        val thisWeekStart = dayAfterNext.atTime(0, 0).toInstant(timeZone)
-        val thisWeekEnd = endOfWeekDate.plus(DatePeriod(days = 1)).atTime(0, 0).toInstant(timeZone) - 1.nanoseconds
-        val thisWeekRange = thisWeekStart..thisWeekEnd
+        val endOfWeekDate = dayAfterNext.plus(
+            DatePeriod(days = DayOfWeek.SUNDAY.ordinal - dayAfterNext.dayOfWeek.ordinal)
+        )
+        val laterInWeekStart = dayAfterNext.atTime(0, 0).toInstant(timeZone)
+        val laterInWeekEnd = endOfWeekDate.plus(DatePeriod(days = 1)).atTime(0, 0).toInstant(timeZone) - 1.nanoseconds
+        val laterInWeekRange = laterInWeekStart..laterInWeekEnd
 
-        @Suppress("detekt.MagicNumber")
-        val daysUntilNextMonday = (DayOfWeek.MONDAY.ordinal - dayAfterNext.dayOfWeek.ordinal + 7) % 7
-        val nextMonday = dayAfterNext.plus(DatePeriod(days = daysUntilNextMonday))
+        val nextMonday = endOfWeekDate.plus(DatePeriod(days = 1))
         val nextSunday = nextMonday.plus(DatePeriod(days = 6))
         val nextWeekStart = nextMonday.atTime(0, 0).toInstant(timeZone)
         val nextWeekEnd = nextSunday.plus(DatePeriod(days = 1)).atTime(0, 0).toInstant(timeZone) - 1.nanoseconds
@@ -138,8 +130,19 @@ class GetSoonDueTasksUseCase(
         return DateRanges(
             today = todayRange,
             nextDay = nextDayRange,
-            thisWeek = thisWeekRange,
+            laterInWeek = laterInWeekRange,
             nextWeek = nextWeekRange
         )
+    }
+
+    sealed interface Result {
+        data class Error(val error: Throwable) : Result
+        data class Success(
+            val dueTasks: List<Task>,
+            val tasksToday: List<Task>,
+            val tasksNextDay: List<Task>,
+            val tasksLaterInWeek: List<Task>,
+            val tasksNextWeek: List<Task>,
+        ) : Result
     }
 }

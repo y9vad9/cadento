@@ -10,6 +10,7 @@ import timemate.client.tasks.domain.TaskId
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
+import kotlin.uuid.Uuid
 
 class DeleteTaskUseCaseTest {
 
@@ -19,7 +20,7 @@ class DeleteTaskUseCaseTest {
     @Test
     fun `execute deletes task and returns Success`() = runTest {
         // GIVEN
-        val taskId = TaskId.createOrThrow(1L)
+        val taskId = TaskId(Uuid.random())
         coEvery { taskRepository.deleteTask(taskId) } returns Unit
 
         // WHEN
@@ -34,7 +35,7 @@ class DeleteTaskUseCaseTest {
     @Test
     fun `execute returns Error when repository fails`() = runTest {
         // GIVEN
-        val taskId = TaskId.createOrThrow(1L)
+        val taskId = TaskId(Uuid.random())
         val exception = RuntimeException("DB Error")
         coEvery { taskRepository.deleteTask(taskId) } throws exception
 

@@ -16,6 +16,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
 import kotlin.time.Instant
+import kotlin.uuid.Uuid
 
 class CreateTaskUseCaseTest {
 
@@ -26,7 +27,7 @@ class CreateTaskUseCaseTest {
     fun `execute creates task and returns Success`() = runTest {
         // GIVEN
         val task = Task.createOrThrow(
-            id = TaskId.createOrThrow(1L),
+            id = TaskId(Uuid.random()),
             name = TaskName.createOrThrow("Task 1"),
             description = TaskDescription.createOrThrow("Description"),
             creationTime = Instant.parse("2024-01-01T00:00:00Z"),
@@ -49,7 +50,7 @@ class CreateTaskUseCaseTest {
     fun `execute returns Error when repository fails`() = runTest {
         // GIVEN
         val task = Task.createOrThrow(
-            id = TaskId.createOrThrow(1L),
+            id = TaskId(Uuid.random()),
             name = TaskName.createOrThrow("Task 1"),
             description = TaskDescription.createOrThrow("Description"),
             creationTime = Instant.parse("2024-01-01T00:00:00Z"),

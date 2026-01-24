@@ -1,4 +1,4 @@
-package timemate.client.tasks.application
+package timemate.client.tasks.application.test
 
 import app.cash.turbine.test
 import io.mockk.every
@@ -9,6 +9,7 @@ import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
+import timemate.client.tasks.application.localDateTimeFlow
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.time.Clock

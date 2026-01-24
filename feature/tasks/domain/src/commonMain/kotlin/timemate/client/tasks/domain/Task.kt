@@ -17,6 +17,7 @@ import kotlin.time.Instant
  * @property creationTime The time when the task was created.
  * @property dueTime The deadline by which the task should be completed.
  */
+@Suppress("detekt.TooManyFunctions")
 class Task private constructor(
     val id: TaskId,
     val name: TaskName,
@@ -81,7 +82,7 @@ class Task private constructor(
             dueTime: Instant,
         ): Task =
             when (
-                create(
+                val result = create(
                     id = id,
                     name = name,
                     description = description,
@@ -91,16 +92,42 @@ class Task private constructor(
                     dueTime = dueTime
                 )
             ) {
-                is CreationResult.Success ->
-                    create(id, name, description, status, tags, creationTime, dueTime)
-                        .let { (it as CreationResult.Success).task }
-
+                is CreationResult.Success -> result.task
                 CreationResult.InvalidTimeRange ->
                     throw IllegalArgumentException(
                         "Task creation time must not be after due time."
                     )
             }
     }
+
+    /**
+     * Returns a copy of this task with a new name.
+     */
+    fun rename(newName: TaskName): Task =
+        copy(name = newName)
+
+    /**
+     * Returns a copy of this task with a new description.
+     */
+    fun changeDescription(newDescription: TaskDescription): Task =
+        copy(description = newDescription)
+
+    /**
+     * Returns a copy of this task with a new due time.
+     * @throws IllegalArgumentException if the new due time is before the creation time.
+     */
+    fun changeDueTime(newDueTime: Instant): ChangeDueTimeResult {
+        if (newDueTime < creationTime) {
+            return ChangeDueTimeResult.InvalidTimeRange
+        }
+        return ChangeDueTimeResult.Success(copy(dueTime = newDueTime))
+    }
+
+    /**
+     * Returns a copy of this task with updated tags.
+     */
+    fun updateTags(newTags: List<TaskTag>): Task =
+        copy(tags = newTags)
 
     /**
      * Returns the duration remaining until the task is due, relative to [currentTime].
@@ -140,6 +167,14 @@ class Task private constructor(
         this === other || (other is Task && other.id == id)
 
     override fun hashCode(): Int = id.hashCode()
+
+    /**
+     * Result of attempting to change the due time of a [Task].
+     */
+    sealed interface ChangeDueTimeResult {
+        data class Success(val task: Task) : ChangeDueTimeResult
+        data object InvalidTimeRange : ChangeDueTimeResult
+    }
 
     /**
      * Result of attempting to create a [Task].

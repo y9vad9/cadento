@@ -14,11 +14,13 @@ import kotlin.test.assertSame
 import kotlin.test.assertNotSame
 import kotlin.test.assertTrue
 import kotlin.test.assertFalse
+import kotlin.time.Duration.Companion.days
 import kotlin.time.Instant
+import kotlin.uuid.Uuid
 
 class TaskTest {
 
-    private val baseId = TaskId.createOrThrow(1L)
+    private val baseId = TaskId(Uuid.random())
     private val baseName = TaskName.createOrThrow("Test Task")
     private val baseDescription = TaskDescription.createOrThrow("A description")
 
@@ -270,5 +272,110 @@ class TaskTest {
 
         // THEN
         assertIs<Task.CreationResult.InvalidTimeRange>(result)
+    }
+
+    @Test
+    fun `rename returns new instance with updated name`() {
+        // GIVEN
+        val task = Task.createOrThrow(
+            id = baseId,
+            name = baseName,
+            description = baseDescription,
+            creationTime = creationTime,
+            dueTime = dueTime,
+            tags = emptyList()
+        )
+        val newName = TaskName.createOrThrow("New Name")
+
+        // WHEN
+        val result = task.rename(newName)
+
+        // THEN
+        assertEquals(newName, result.name)
+        assertNotSame(task, result)
+    }
+
+    @Test
+    fun `changeDescription returns new instance with updated description`() {
+        // GIVEN
+        val task = Task.createOrThrow(
+            id = baseId,
+            name = baseName,
+            description = baseDescription,
+            creationTime = creationTime,
+            dueTime = dueTime,
+            tags = emptyList()
+        )
+        val newDescription = TaskDescription.createOrThrow("New Description")
+
+        // WHEN
+        val result = task.changeDescription(newDescription)
+
+        // THEN
+        assertEquals(newDescription, result.description)
+        assertNotSame(task, result)
+    }
+
+    @Test
+    fun `changeDueTime returns Success with updated due time`() {
+        // GIVEN
+        val task = Task.createOrThrow(
+            id = baseId,
+            name = baseName,
+            description = baseDescription,
+            creationTime = creationTime,
+            dueTime = dueTime,
+            tags = emptyList()
+        )
+        val newDueTime = dueTime.plus(1.days)
+
+        // WHEN
+        val result = task.changeDueTime(newDueTime)
+
+        // THEN
+        assertIs<Task.ChangeDueTimeResult.Success>(result)
+        assertEquals(newDueTime, result.task.dueTime)
+        assertNotSame(task, result.task)
+    }
+
+    @Test
+    fun `changeDueTime returns InvalidTimeRange if new due time is before creation time`() {
+        // GIVEN
+        val task = Task.createOrThrow(
+            id = baseId,
+            name = baseName,
+            description = baseDescription,
+            creationTime = creationTime,
+            dueTime = dueTime,
+            tags = emptyList()
+        )
+        val newDueTime = creationTime.minus(1.days)
+
+        // WHEN
+        val result = task.changeDueTime(newDueTime)
+
+        // THEN
+        assertIs<Task.ChangeDueTimeResult.InvalidTimeRange>(result)
+    }
+
+    @Test
+    fun `updateTags returns new instance with updated tags`() {
+        // GIVEN
+        val task = Task.createOrThrow(
+            id = baseId,
+            name = baseName,
+            description = baseDescription,
+            creationTime = creationTime,
+            dueTime = dueTime,
+            tags = emptyList()
+        )
+        val newTags = listOf(TaskTag.createOrThrow("new-tag"))
+
+        // WHEN
+        val result = task.updateTags(newTags)
+
+        // THEN
+        assertEquals(newTags, result.tags)
+        assertNotSame(task, result)
     }
 }
