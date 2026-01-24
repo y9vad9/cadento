@@ -1,16 +1,10 @@
 package timemate.client.gradle.convention
 
 plugins {
-    kotlin("multiplatform")
+    kotlin("jvm")
 }
 
 kotlin {
-    jvm()
-    // Dummy target to avoid `commonMain` access to jvm classes
-    js {
-        browser()
-    }
-
     jvmToolchain(11)
 
     sourceSets.all {
