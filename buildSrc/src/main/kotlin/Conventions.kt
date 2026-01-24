@@ -74,6 +74,7 @@ class FeatureComposeNamespace internal constructor(
  * Convention plugins used in Kotlin Multiplatform projects.
  */
 class MultiplatformNamespace internal constructor(
+    val core: String = "timemate.client.gradle.convention.multiplatform-convention",
     /** Convention plugin for setting up shared multiplatform libraries. */
     val library: String = "timemate.client.gradle.convention.multiplatform-library-convention"
 )
