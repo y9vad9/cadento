@@ -4,8 +4,8 @@ kotlinx-coroutines = "1.10.2"
 kotlinx-serialization = "1.10.0"
 ktor = "3.4.0"
 android-gradle-plugin = "8.9.1"
-compose = "1.10.0"
-compose-material3 = "1.11.0-alpha01"
+android-compose-version = "1.7.1"
+compose = "1.8.2"
 mockk = "1.14.4"
 sqldelight = "2.1.0"
 clikt = "5.0.3"
@@ -26,6 +26,8 @@ detekt-compose = "0.4.22"
 kover = "0.9.4"
 xerial-sqlite-jdbc = "3.51.1.0"
 h2-database = "2.4.240"
+androidx-compose-material3 = "1.4.0"
+androidx-activity-compose = "1.12.2"
 accompanist = "0.32.0"
 androidx-performance-annotation = "1.0.0-alpha01"
 
@@ -66,12 +68,17 @@ xerial-sqlite-jdbc = { module = "org.xerial:sqlite-jdbc", version.ref = "xerial-
 h2-database = { module = "com.h2database:h2", version.ref = "h2-database" }
 
 # ───────────────────────────────────────────────────────────────────────────────
-# Compose Multiplatform
+# Jetpack Compose
 # ───────────────────────────────────────────────────────────────────────────────
-compose-ui = { module = "org.jetbrains.compose.ui:ui", version.ref = "compose" }
-compose-preview = { module = "org.jetbrains.compose.ui:ui-tooling-preview", version.ref = "compose" }
-compose-foundation = { module = "org.jetbrains.compose.foundation:foundation", version.ref = "compose" }
-compose-material3 = { module = "org.jetbrains.compose.material3:material3", version.ref = "compose-material3" }
+jetpack-compose-ui = { module = "androidx.compose.ui:ui", version.ref = "android-gradle-plugin" }
+jetpack-compose-foundation = { module = "androidx.compose.foundation:foundation", version.ref = "android-compose-version" }
+jetpack-compose-material3 = { module = "androidx.compose.material3:material3", version.ref = "androidx-compose-material3" }
+jetpack-compose-icons = { module = "androidx.compose.material:material-icons-core", version.ref = "android-compose-version" }
+jetpack-compose-extendedIcons = { module = "androidx.compose.material:material-icons-extended", version.ref = "android-compose-version" }
+jetpack-compose-activity = { module = "androidx.activity:activity-compose", version.ref = "androidx-activity-compose" }
+jetpack-compose-viewmodel = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "android-compose-version" }
+jetpack-compose-material3WindowSizeClass = { module = "androidx.compose.material3:material3-window-size-class", version.ref = "androidx-compose-material3" }
+compose-windowsize = { module = "org.jetbrains.compose.material3:material3-window-size-class", version.ref = "compose" }
 
 # ───────────────────────────────────────────────────────────────────────────────
 # Accompanist

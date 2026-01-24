@@ -1,6 +1,7 @@
 package timemate.client.gradle.convention.feature
 
 import org.gradle.accessors.dm.LibrariesForLibs
+import org.jetbrains.compose.ExperimentalComposeLibrary
 
 plugins {
     id("timemate.client.gradle.convention.multiplatform-convention")
@@ -13,8 +14,10 @@ val libs = the<LibrariesForLibs>()
 
 dependencies {
     // Compose
-    commonMainImplementation(libs.compose.ui)
-    commonMainImplementation(libs.compose.material3)
+    commonMainImplementation(compose.ui)
+    @OptIn(ExperimentalComposeLibrary::class)
+    commonTestImplementation(compose.uiTest)
+    commonMainImplementation(compose.material3)
 
     // Detekt plugins
     detektPlugins(libs.detekt.compose)

@@ -39,9 +39,3 @@ include(
     ":feature:timers:presentation:compose-ui",
     ":feature:timers:dependencies",
 )
-
-include(
-    ":ui-kit",
-    ":ui-kit:material3",
-    ":ui-kit:preview",
-)
