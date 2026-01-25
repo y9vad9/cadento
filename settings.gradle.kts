@@ -34,6 +34,7 @@ include(
 
 include(
     ":feature:timers:domain",
+    ":feature:tasks:application",
     ":feature:timers:integration",
     ":feature:timers:presentation",
     ":feature:timers:presentation:compose-ui",

@@ -14,11 +14,11 @@ kover {
     reports {
         verify.rule {
             /**
-             * We want to enforce domain to be fully tested as logic there
+             * We want to enforce application to be fully tested as logic there
              * is totally deterministic, pure; therefore, should be well-tested
              */
             minBound(
-                minValue = 85,
+                minValue = 90,
                 coverageUnits = CoverageUnit.LINE,
                 aggregationForGroup = AggregationType.COVERED_PERCENTAGE,
             )
