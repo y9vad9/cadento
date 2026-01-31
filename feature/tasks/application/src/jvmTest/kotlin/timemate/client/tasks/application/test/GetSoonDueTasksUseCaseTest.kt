@@ -213,13 +213,17 @@ class GetSoonDueTasksUseCaseTest {
         useCase.execute().test {
             val result = awaitItem()
             assertIs<GetSoonDueTasksUseCase.Result.Success>(result)
+            assertTrue(
+                actual = result.tasksLaterInWeek.isEmpty(),
+                message = "laterInWeek should be empty on Saturday",
+            )
             assertEquals(
                 expected = 1,
-                actual = result.tasksLaterInWeek.size,
+                actual = result.tasksNextWeek.size,
             )
             assertEquals(
                 expected = laterInWeekTask,
-                actual = result.tasksLaterInWeek.first(),
+                actual = result.tasksNextWeek.first(),
             )
             cancelAndIgnoreRemainingEvents()
         }

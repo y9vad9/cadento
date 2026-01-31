@@ -20,18 +20,15 @@ dependencies {
 
 ksp {
     allWarningsAsErrors = false
+    arg("KOIN_DEFAULT_MODULE", "true")
 }
 
-// kotlin.sourceSets.all {
-//    kotlin.srcDir("build/generated/ksp/metadata/commonMain/kotlin")
-// }
+kotlin.sourceSets.commonMain {
+    kotlin.srcDir("build/generated/ksp/metadata/commonMain/kotlin")
+}
 
 tasks.withType(KotlinCompilationTask::class.java).configureEach {
     if(name != "kspCommonMainKotlinMetadata") {
         dependsOn("kspCommonMainKotlinMetadata")
     }
-}
-
-ksp {
-    arg("KOIN_DEFAULT_MODULE", "true")
 }

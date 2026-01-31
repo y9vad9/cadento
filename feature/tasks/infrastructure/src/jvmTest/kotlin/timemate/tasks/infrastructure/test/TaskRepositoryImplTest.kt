@@ -181,6 +181,27 @@ class TaskRepositoryImplTest {
     }
 
     @Test
+    fun `observeTask returns correct mapped task`() = runTest {
+        // GIVEN task id and database source that returns a flow of DbTask
+        val taskId = TaskId(Uuid.random())
+        val dbTask = createDbTask()
+        val task = createTask()
+
+        every { databaseSource.observeTask(taskId.value) } returns flowOf(dbTask)
+        every { dbTaskMapper.mapToDomain(dbTask) } returns task
+
+        // WHEN & THEN we collect results
+        repository.observeTask(taskId).test {
+            val result = awaitItem()
+            assertEquals(
+                expected = task,
+                actual = result,
+            )
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
     fun `getTask with existing id returns Success with mapped task`() = runTest {
         // GIVEN task id and database source that returns a DbTask
         val taskId = TaskId(Uuid.random())

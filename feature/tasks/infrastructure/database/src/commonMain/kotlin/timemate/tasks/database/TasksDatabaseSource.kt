@@ -5,6 +5,8 @@ import app.cash.sqldelight.async.coroutines.awaitAsOneOrNull
 import app.cash.sqldelight.coroutines.asFlow
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import timemate.tasks.sqldelight.SelectDueTasksAsc
+import timemate.tasks.sqldelight.SelectDueTasksDesc
 import timemate.tasks.sqldelight.TaskDatabase
 import kotlin.uuid.Uuid
 
@@ -108,24 +110,21 @@ class TasksDatabaseSource(
     }
 
     fun observeDueTasks(now: String, sort: DbTaskSort): Flow<List<DbTask>> {
-        val query = if (sort == DbTaskSort.ByDueAsc) {
+        return if (sort == DbTaskSort.ByDueAsc) {
             queries.selectDueTasksAsc(now = now)
+                .asFlow()
+                .map { cursor ->
+                    val rows = cursor.awaitAsList().map { queryMapper.fromSelectDueTasksAsc(it) }
+                    attachTags(rows)
+                }
         } else {
             queries.selectDueTasksDesc(now = now)
-        }
-
-        return query
-            .asFlow()
-            .map { cursor ->
-                val rows = cursor.awaitAsList().map {
-                    if (sort == DbTaskSort.ByDueAsc) {
-                        queryMapper.fromSelectDueTasksAsc(it as timemate.tasks.sqldelight.SelectDueTasksAsc)
-                    } else {
-                        queryMapper.fromSelectDueTasksDesc(it as timemate.tasks.sqldelight.SelectDueTasksDesc)
-                    }
+                .asFlow()
+                .map { cursor ->
+                    val rows = cursor.awaitAsList().map { queryMapper.fromSelectDueTasksDesc(it) }
+                    attachTags(rows)
                 }
-                attachTags(rows)
-            }
+        }
     }
 
     fun observeTasksDueInRange(from: String, to: String): Flow<List<DbTask>> =

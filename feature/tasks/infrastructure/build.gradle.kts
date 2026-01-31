@@ -8,4 +8,5 @@ dependencies {
     commonMainImplementation(projects.foundation.coroutines)
 
     jvmTestImplementation(libs.turbine)
+    jvmTestImplementation(libs.koin.test)
 }

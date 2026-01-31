@@ -34,15 +34,17 @@ object TaskDuePolicy {
         val endOfNextDay = nextDayDate.plus(DatePeriod(days = 1)).atTime(0, 0).toInstant(timeZone) - 1.nanoseconds
         val nextDayRange = nextDayStart..endOfNextDay
 
-        val dayAfterNext = nextDayDate.plus(DatePeriod(days = 1))
-        val endOfWeekDate = dayAfterNext.plus(
-            DatePeriod(days = DayOfWeek.SUNDAY.ordinal - dayAfterNext.dayOfWeek.ordinal),
+        val endOfCurrentWeekDate = currentDate.plus(
+            DatePeriod(days = DayOfWeek.SUNDAY.ordinal - currentDate.dayOfWeek.ordinal),
         )
-        val laterInWeekStart = dayAfterNext.atTime(0, 0).toInstant(timeZone)
-        val laterInWeekEnd = endOfWeekDate.plus(DatePeriod(days = 1)).atTime(0, 0).toInstant(timeZone) - 1.nanoseconds
+        val dayAfterNextDate = nextDayDate.plus(DatePeriod(days = 1))
+        
+        val laterInWeekStart = dayAfterNextDate.atTime(0, 0).toInstant(timeZone)
+        val laterInWeekEnd = endOfCurrentWeekDate.plus(DatePeriod(days = 1))
+            .atTime(0, 0).toInstant(timeZone) - 1.nanoseconds
         val laterInWeekRange = laterInWeekStart..laterInWeekEnd
 
-        val nextMonday = endOfWeekDate.plus(DatePeriod(days = 1))
+        val nextMonday = endOfCurrentWeekDate.plus(DatePeriod(days = 1))
         val nextSunday = nextMonday.plus(DatePeriod(days = 6))
         val nextWeekStart = nextMonday.atTime(0, 0).toInstant(timeZone)
         val nextWeekEnd = nextSunday.plus(DatePeriod(days = 1)).atTime(0, 0).toInstant(timeZone) - 1.nanoseconds

@@ -4,6 +4,7 @@ import kotlinx.datetime.TimeZone
 import timemate.client.tasks.domain.TaskDuePolicy
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.hours
 import kotlin.time.Instant
@@ -62,7 +63,7 @@ class TaskDuePolicyTest {
     }
 
     @Test
-    fun `calculateDateRanges with Saturday returns ranges with next week starting on Monday`() {
+    fun `calculateDateRanges with Saturday returns correct ranges`() {
         // GIVEN a Saturday at 10:00 UTC
         val saturday = Instant.parse("2024-01-06T10:00:00Z")
         val timeZone = TimeZone.UTC
@@ -70,22 +71,40 @@ class TaskDuePolicyTest {
         // WHEN we calculate date ranges
         val result = TaskDuePolicy.calculateDateRanges(saturday, timeZone)
 
-        // THEN ranges should be correct
-        // Today: Saturday
-        // Next Day: Sunday
-        // Later in Week: (Monday+)
-        // Logic for laterInWeek uses dayAfterNext (Sunday + 1 = Monday)
-        // dayAfterNext = nextDayDate + 1 day = Sunday + 1 day = Monday
-        // endOfWeekDate = Monday + (Sunday.ordinal - Monday.ordinal) = Sunday
-        // So laterInWeek is Monday to Sunday.
+        // THEN laterInWeek should be empty (since today is Sat and nextDay is Sun)
+        // and nextWeek should be the following week
+        assertTrue(
+            actual = result.laterInWeek.start > result.laterInWeek.endInclusive,
+            message = "laterInWeek should be empty on Saturday",
+        )
 
         assertEquals(
             expected = Instant.parse("2024-01-08T00:00:00Z"),
-            actual = result.laterInWeek.start,
+            actual = result.nextWeek.start,
+            message = "nextWeek should start on next Monday",
         )
+    }
+
+    @Test
+    fun `calculateDateRanges with Sunday returns correct ranges`() {
+        // GIVEN a Sunday at 10:00 UTC
+        val sunday = Instant.parse("2024-01-07T10:00:00Z")
+        val timeZone = TimeZone.UTC
+
+        // WHEN we calculate date ranges
+        val result = TaskDuePolicy.calculateDateRanges(sunday, timeZone)
+
+        // THEN laterInWeek should be empty
+        // and nextWeek should be the following week
+        assertTrue(
+            actual = result.laterInWeek.start > result.laterInWeek.endInclusive,
+            message = "laterInWeek should be empty on Sunday",
+        )
+
         assertEquals(
-            expected = Instant.parse("2024-01-14T23:59:59.999999999Z"),
-            actual = result.laterInWeek.endInclusive,
+            expected = Instant.parse("2024-01-08T00:00:00Z"),
+            actual = result.nextWeek.start,
+            message = "nextWeek should start on next Monday",
         )
     }
 }
