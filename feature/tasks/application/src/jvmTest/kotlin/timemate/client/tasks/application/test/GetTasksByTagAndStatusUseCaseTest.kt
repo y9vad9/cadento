@@ -17,51 +17,66 @@ import timemate.client.tasks.domain.TaskTag
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
+import kotlin.time.Clock
 import kotlin.time.Instant
 import kotlin.uuid.Uuid
 
 class GetTasksByTagAndStatusUseCaseTest {
 
     private val taskRepository: TaskRepository = mockk()
-    private val useCase = GetTasksByTagAndStatusUseCase(taskRepository)
+    private val clock: Clock = mockk()
+    private val useCase = GetTasksByTagAndStatusUseCase(
+        taskRepository = taskRepository,
+        clock = clock,
+    )
 
     @Test
-    fun `execute returns Success with filtered tasks`() = runTest {
-        // GIVEN
+    fun `execute with tag and status returns Success with filtered tasks`() = runTest {
+        // GIVEN tag, status and repository that returns a match
         val tag = TaskTag.createOrThrow("tag1")
+        val now = Instant.parse("2024-01-01T00:00:00Z")
         val task = Task.createOrThrow(
             id = TaskId(Uuid.random()),
             name = TaskName.createOrThrow("Task 1"),
             description = TaskDescription.createOrThrow("Description"),
-            creationTime = Instant.parse("2024-01-01T00:00:00Z"),
+            creationTime = now,
             dueTime = Instant.parse("2024-01-02T00:00:00Z"),
             status = TaskStatus.Builtin.Planned,
-            tags = listOf(tag)
+            tags = listOf(tag),
         )
-        every { taskRepository.getTasks(any(), any()) } returns flowOf(listOf(task))
+        every { clock.now() } returns now
+        every { taskRepository.observeTasks(any(), any(), now) } returns flowOf(listOf(task))
 
-        // WHEN & THEN
+        // WHEN & THEN we collect results
         useCase.execute(tag = tag, status = TaskStatus.Builtin.Planned).test {
             val result = awaitItem()
             assertIs<GetTasksByTagAndStatusUseCase.Result.Success>(result)
-            assertEquals(listOf(task), result.tasks)
+            assertEquals(
+                expected = listOf(task),
+                actual = result.tasks,
+            )
             cancelAndIgnoreRemainingEvents()
         }
     }
 
     @Test
-    fun `execute returns Error when repository throws exception`() = runTest {
-        // GIVEN
+    fun `execute with repository failure returns Error`() = runTest {
+        // GIVEN fixed time and repository that throws exception
+        val now = Instant.parse("2024-01-01T00:00:00Z")
         val exceptionMessage = "Database error"
         val exception = RuntimeException(exceptionMessage)
-        every { taskRepository.getTasks(any(), any()) } returns flow { throw exception }
+        every { clock.now() } returns now
+        every { taskRepository.observeTasks(any(), any(), now) } returns flow { throw exception }
 
-        // WHEN & THEN
+        // WHEN & THEN we collect results
         useCase.execute().test {
             val result = awaitItem()
             assertIs<GetTasksByTagAndStatusUseCase.Result.Error>(result)
             assertIs<RuntimeException>(result.error)
-            assertEquals(exceptionMessage, result.error.message)
+            assertEquals(
+                expected = exceptionMessage,
+                actual = result.error.message,
+            )
             cancelAndIgnoreRemainingEvents()
         }
     }

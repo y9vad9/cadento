@@ -1,3 +1,3 @@
 plugins {
-    id(conventions.feature.di)
+    id(conventions.feature.presentation)
 }

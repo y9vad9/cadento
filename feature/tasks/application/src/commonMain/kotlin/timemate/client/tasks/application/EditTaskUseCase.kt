@@ -1,6 +1,5 @@
 package timemate.client.tasks.application
 
-import kotlinx.coroutines.flow.firstOrNull
 import timemate.client.tasks.domain.Task
 import timemate.client.tasks.domain.TaskDescription
 import timemate.client.tasks.domain.TaskId
@@ -12,27 +11,26 @@ import kotlin.time.Instant
 class EditTaskUseCase(
     private val taskRepository: TaskRepository
 ) {
-    @Suppress("detekt.TooGenericExceptionCaught")
     suspend fun execute(
         taskId: TaskId,
         patch: TaskPatch,
     ): Result {
-        return try {
-            val task = taskRepository.getTask(taskId).firstOrNull()
-                ?: return Result.TaskNotFound
+        val task = taskRepository.getTask(taskId)
+            .getOrElse { return Result.Error(it) }
+            ?: return Result.TaskNotFound
 
-            val updatedTask = task
-                .let { patch.newName?.let(it::rename) ?: it }
-                .let { patch.newDescription?.let(it::changeDescription) ?: it }
-                .let { patch.newStatus?.let(it::markAs) ?: it }
-                .let { patch.newTags?.let(it::updateTags) ?: it }
-                .let { applyDueTime(it, patch.newDueTime) ?: return Result.InvalidDueTime }
+        val updatedTask = task
+            .let { patch.newName?.let(it::rename) ?: it }
+            .let { patch.newDescription?.let(it::changeDescription) ?: it }
+            .let { patch.newStatus?.let(it::markAs) ?: it }
+            .let { patch.newTags?.let(it::updateTags) ?: it }
+            .let { applyDueTime(it, patch.newDueTime) ?: return Result.InvalidDueTime }
 
-            taskRepository.updateTask(updatedTask)
-            Result.Success(updatedTask)
-        } catch (e: Exception) {
-            Result.Error(e)
-        }
+        val resultTask = taskRepository.updateTask(updatedTask)
+            .getOrElse { return Result.Error(it) }
+            ?: return Result.TaskNotFound
+
+        return Result.Success(resultTask)
     }
 
     private fun applyDueTime(task: Task, newDueTime: Instant?): Task? {

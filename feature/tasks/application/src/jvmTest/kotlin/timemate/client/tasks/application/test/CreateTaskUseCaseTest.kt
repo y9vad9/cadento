@@ -24,8 +24,8 @@ class CreateTaskUseCaseTest {
     private val useCase = CreateTaskUseCase(taskRepository)
 
     @Test
-    fun `execute creates task and returns Success`() = runTest {
-        // GIVEN
+    fun `execute with valid task returns Success`() = runTest {
+        // GIVEN a valid task and repository that succeeds
         val task = Task.createOrThrow(
             id = TaskId(Uuid.random()),
             name = TaskName.createOrThrow("Task 1"),
@@ -33,22 +33,25 @@ class CreateTaskUseCaseTest {
             creationTime = Instant.parse("2024-01-01T00:00:00Z"),
             dueTime = Instant.parse("2024-01-02T00:00:00Z"),
             status = TaskStatus.Builtin.Planned,
-            tags = listOf(TaskTag.createOrThrow("tag1"))
+            tags = listOf(TaskTag.createOrThrow("tag1")),
         )
-        coEvery { taskRepository.createTask(task) } returns Unit
+        coEvery { taskRepository.createTask(task) } returns Result.success(Unit)
 
-        // WHEN
+        // WHEN we execute use case
         val result = useCase.execute(task)
 
-        // THEN
+        // THEN result is success with same task
         assertIs<CreateTaskUseCase.Result.Success>(result)
-        assertEquals(task, result.task)
+        assertEquals(
+            expected = task,
+            actual = result.task,
+        )
         coVerify { taskRepository.createTask(task) }
     }
 
     @Test
-    fun `execute returns Error when repository fails`() = runTest {
-        // GIVEN
+    fun `execute with repository failure returns Error`() = runTest {
+        // GIVEN a task and repository that fails
         val task = Task.createOrThrow(
             id = TaskId(Uuid.random()),
             name = TaskName.createOrThrow("Task 1"),
@@ -56,16 +59,19 @@ class CreateTaskUseCaseTest {
             creationTime = Instant.parse("2024-01-01T00:00:00Z"),
             dueTime = Instant.parse("2024-01-02T00:00:00Z"),
             status = TaskStatus.Builtin.Planned,
-            tags = emptyList()
+            tags = emptyList(),
         )
         val exception = RuntimeException("DB Error")
-        coEvery { taskRepository.createTask(task) } throws exception
+        coEvery { taskRepository.createTask(task) } returns Result.failure(exception)
 
-        // WHEN
+        // WHEN we execute use case
         val result = useCase.execute(task)
 
-        // THEN
+        // THEN result is error with caught exception
         assertIs<CreateTaskUseCase.Result.Error>(result)
-        assertEquals(exception, result.error)
+        assertEquals(
+            expected = exception,
+            actual = result.error,
+        )
     }
 }

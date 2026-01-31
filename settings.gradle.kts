@@ -26,19 +26,24 @@ include(
 
 include(
     ":feature:tasks:domain",
-    ":feature:tasks:integration",
+    ":feature:tasks:application",
+    ":feature:tasks:infrastructure",
+    ":feature:tasks:infrastructure:database",
     ":feature:tasks:presentation",
     ":feature:tasks:presentation:compose-ui",
-    ":feature:tasks:dependencies",
 )
 
 include(
     ":feature:timers:domain",
-    ":feature:tasks:application",
     ":feature:timers:integration",
+    ":feature:timers:integration:database",
     ":feature:timers:presentation",
     ":feature:timers:presentation:compose-ui",
-    ":feature:timers:dependencies",
+)
+
+include(
+    ":foundation:time",
+    ":foundation:coroutines",
 )
 
 include(

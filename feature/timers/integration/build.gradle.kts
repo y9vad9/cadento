@@ -1,3 +1,3 @@
 plugins {
-    id(conventions.feature.integration)
+    id(conventions.feature.infrastructure)
 }

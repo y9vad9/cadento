@@ -21,7 +21,6 @@ val installGitHooks by tasks.registering(Copy::class) {
     from(srcDir)
     into(dstDir)
 
-    // Make copied files executable
     filesMatching("*") {
         file.setExecutable(true)
     }

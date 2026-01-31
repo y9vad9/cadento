@@ -37,16 +37,15 @@ class ConventionNamespace internal constructor(
     val kover: String = "timemate.client.gradle.convention.kover-convention",
 
     /** Convention plugins used in Kotlin Multiplatform projects. */
-    val multiplatform: MultiplatformNamespace = MultiplatformNamespace()
+    val multiplatform: MultiplatformNamespace = MultiplatformNamespace(),
+    /** Convention plugin for DI (Koin) setup. */
+    val di: String = "timemate.client.gradle.convention.feature.di-convention",
 )
 
 /**
  * Convention plugins related to individual feature modules.
  */
 class FeatureNamespace internal constructor(
-    /** Convention plugin for DI setup in feature modules. */
-    val di: String = "timemate.client.gradle.convention.feature.di-convention",
-
     /** Convention plugin for domain-layer setup in feature modules. */
     val domain: String = "timemate.client.gradle.convention.feature.domain-convention",
 
@@ -54,9 +53,9 @@ class FeatureNamespace internal constructor(
     val application: String = "timemate.client.gradle.convention.feature.application-convention",
 
     /** Convention plugins related to integration-layer concerns like database, network, etc. */
-    val integration: String = "timemate.client.gradle.convention.feature.integration-convention",
+    val infrastructure: String = "timemate.client.gradle.convention.feature.infrastructure-convention",
 
-    val database: String = "timemate.client.gradle.convention.feature.integration-database-convention",
+    val database: String = "timemate.client.gradle.convention.feature.database-convention",
 
     val presentation: String = "timemate.client.gradle.convention.feature.presentation-convention",
 

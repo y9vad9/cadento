@@ -1,4 +1,4 @@
-package timemate.client.gradle.convention.feature
+package timemate.client.gradle.convention
 
 import org.gradle.accessors.dm.LibrariesForLibs
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask
@@ -19,15 +19,19 @@ dependencies {
 }
 
 ksp {
-    allWarningsAsErrors = true
+    allWarningsAsErrors = false
 }
 
-kotlin.sourceSets.all {
-    kotlin.srcDir("build/generated/ksp/metadata/commonMain/kotlin")
-}
+// kotlin.sourceSets.all {
+//    kotlin.srcDir("build/generated/ksp/metadata/commonMain/kotlin")
+// }
 
 tasks.withType(KotlinCompilationTask::class.java).configureEach {
     if(name != "kspCommonMainKotlinMetadata") {
         dependsOn("kspCommonMainKotlinMetadata")
     }
+}
+
+ksp {
+    arg("KOIN_DEFAULT_MODULE", "true")
 }

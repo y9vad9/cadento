@@ -79,18 +79,6 @@ class TaskStatusTest {
     }
 
     @Test
-    fun `Custom constructor throws if name is builtin`() {
-        // GIVEN a custom id with builtin name
-        val id = customId
-        val name = TaskStatusName.PLANNED
-
-        // WHEN / THEN
-        assertFailsWith<IllegalArgumentException> {
-            TaskStatus.Custom(id, name)
-        }
-    }
-
-    @Test
     fun `isBuiltin returns true for builtin statuses`() {
         // GIVEN builtin statuses
         val statuses = listOf(

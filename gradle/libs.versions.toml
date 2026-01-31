@@ -64,6 +64,7 @@ sqldelight-android-driver = { module = "app.cash.sqldelight:android-driver", ver
 sqldelight-native-driver = { module = "app.cash.sqldelight:native-driver", version.ref = "sqldelight" }
 sqldelight-runtime = { module = "app.cash.sqldelight:runtime", version.ref = "sqldelight" }
 sqldelight-coroutines = { module = "app.cash.sqldelight:coroutines-extensions", version.ref = "sqldelight" }
+sqldelight-sqlite-dialect = { module = "app.cash.sqldelight:sqlite-3-38-dialect", version.ref = "sqldelight" }
 xerial-sqlite-jdbc = { module = "org.xerial:sqlite-jdbc", version.ref = "xerial-sqlite-jdbc" }
 h2-database = { module = "com.h2database:h2", version.ref = "h2-database" }
 

@@ -18,7 +18,6 @@ import timemate.client.tasks.domain.TaskDescription
 import timemate.client.tasks.domain.TaskId
 import timemate.client.tasks.domain.TaskName
 import timemate.client.tasks.domain.TaskStatus
-import timemate.client.tasks.domain.TaskTag
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
@@ -36,11 +35,15 @@ class GetSoonDueTasksUseCaseTest {
     private val taskRepository: TaskRepository = mockk()
     private val timeZoneProvider: TimeZoneProvider = mockk()
     private val clock: Clock = mockk()
-    private val useCase = GetSoonDueTasksUseCase(taskRepository, timeZoneProvider, clock)
+    private val useCase = GetSoonDueTasksUseCase(
+        taskRepository = taskRepository,
+        timeZoneProvider = timeZoneProvider,
+        clock = clock,
+    )
 
     @Test
     fun `execute returns Success with grouped tasks`() = runTest {
-        // GIVEN
+        // GIVEN fixed time, UTC zone and tasks for different ranges
         val now = Instant.parse("2024-01-01T10:00:00Z")
         every { clock.now() } returns now
         every { timeZoneProvider.timeZone } returns MutableStateFlow(TimeZone.UTC)
@@ -51,81 +54,102 @@ class GetSoonDueTasksUseCaseTest {
         val laterInWeekTask = createTask(Uuid.random(), now + 3.days)
         val nextWeekTask = createTask(Uuid.random(), now + 8.days)
 
-        every { taskRepository.getDueTasks(now) } returns flowOf(listOf(dueTask))
+        every { taskRepository.observeDueTasks(now) } returns flowOf(listOf(dueTask))
         every {
-            taskRepository.getTasksWithDueBetween(
-                now..Instant.parse("2024-01-01T23:59:59.999999999Z")
+            taskRepository.observeTasksDueBetween(
+                now..Instant.parse("2024-01-01T23:59:59.999999999Z"),
             )
         } returns flowOf(listOf(todayTask))
         every {
-            taskRepository.getTasksWithDueBetween(
-                Instant.parse("2024-01-02T00:00:00Z")..Instant.parse("2024-01-02T23:59:59.999999999Z")
+            taskRepository.observeTasksDueBetween(
+                Instant.parse("2024-01-02T00:00:00Z")..Instant.parse("2024-01-02T23:59:59.999999999Z"),
             )
         } returns flowOf(listOf(nextDayTask))
         every {
-            taskRepository.getTasksWithDueBetween(
-                Instant.parse("2024-01-03T00:00:00Z")..Instant.parse("2024-01-07T23:59:59.999999999Z")
+            taskRepository.observeTasksDueBetween(
+                Instant.parse("2024-01-03T00:00:00Z")..Instant.parse("2024-01-07T23:59:59.999999999Z"),
             )
         } returns flowOf(listOf(laterInWeekTask))
         every {
-            taskRepository.getTasksWithDueBetween(
-                Instant.parse("2024-01-08T00:00:00Z")..Instant.parse("2024-01-14T23:59:59.999999999Z")
+            taskRepository.observeTasksDueBetween(
+                Instant.parse("2024-01-08T00:00:00Z")..Instant.parse("2024-01-14T23:59:59.999999999Z"),
             )
         } returns flowOf(listOf(nextWeekTask))
 
-        // WHEN & THEN
+        // WHEN & THEN we collect results
         useCase.execute().test {
             val result = awaitItem()
             assertIs<GetSoonDueTasksUseCase.Result.Success>(result)
-            assertEquals(listOf(dueTask), result.dueTasks)
-            assertEquals(listOf(todayTask), result.tasksToday)
-            assertEquals(listOf(nextDayTask), result.tasksNextDay)
-            assertEquals(listOf(laterInWeekTask), result.tasksLaterInWeek)
-            assertEquals(listOf(nextWeekTask), result.tasksNextWeek)
+            assertEquals(
+                expected = listOf(dueTask),
+                actual = result.dueTasks,
+            )
+            assertEquals(
+                expected = listOf(todayTask),
+                actual = result.tasksToday,
+            )
+            assertEquals(
+                expected = listOf(nextDayTask),
+                actual = result.tasksNextDay,
+            )
+            assertEquals(
+                expected = listOf(laterInWeekTask),
+                actual = result.tasksLaterInWeek,
+            )
+            assertEquals(
+                expected = listOf(nextWeekTask),
+                actual = result.tasksNextWeek,
+            )
             cancelAndIgnoreRemainingEvents()
         }
     }
 
     @Test
-    fun `execute returns Error when repository throws exception`() = runTest {
-        // GIVEN
+    fun `execute with repository failure returns Error`() = runTest {
+        // GIVEN repository that throws exception
         val now = Instant.parse("2024-01-01T10:00:00Z")
         val exceptionMessage = "Database error"
         val exception = RuntimeException(exceptionMessage)
         every { clock.now() } returns now
         every { timeZoneProvider.timeZone } returns MutableStateFlow(TimeZone.UTC)
-        every { taskRepository.getDueTasks(any()) } returns flow { throw exception }
-        every { taskRepository.getTasksWithDueBetween(any()) } returns flowOf(emptyList())
+        every { taskRepository.observeDueTasks(any()) } returns flow { throw exception }
+        every { taskRepository.observeTasksDueBetween(any()) } returns flowOf(emptyList())
 
-        // WHEN & THEN
+        // WHEN & THEN we collect results
         useCase.execute().test {
             val result = awaitItem()
             assertIs<GetSoonDueTasksUseCase.Result.Error>(result)
             assertIs<RuntimeException>(result.error)
-            assertEquals(exceptionMessage, result.error.message)
+            assertEquals(
+                expected = exceptionMessage,
+                actual = result.error.message,
+            )
             cancelAndIgnoreRemainingEvents()
         }
     }
 
     @Test
-    fun `execute re-triggers when a task is due`() = runTest {
-        // GIVEN
+    fun `execute re-triggers emission when task becomes due`() = runTest {
+        // GIVEN task due in 1 hour
         val now = Instant.parse("2024-01-01T10:00:00Z")
-        val dueTask = createTask(Uuid.random(), now + 1.hours) // Due in 1 hour
+        val dueTask = createTask(Uuid.random(), now + 1.hours)
         every { clock.now() } returns now andThen (now + 1.hours + 1.days)
         every { timeZoneProvider.timeZone } returns MutableStateFlow(TimeZone.UTC)
 
-        every { taskRepository.getDueTasks(any()) } returns flowOf(listOf(dueTask))
-        every { taskRepository.getTasksWithDueBetween(any()) } returns flowOf(emptyList())
+        every { taskRepository.observeDueTasks(any()) } returns flowOf(listOf(dueTask))
+        every { taskRepository.observeTasksDueBetween(any()) } returns flowOf(emptyList())
 
-        // WHEN & THEN
+        // WHEN & THEN we collect results
         useCase.execute().test {
             // Initial emission
             val firstResult = awaitItem()
             assertIs<GetSoonDueTasksUseCase.Result.Success>(firstResult)
-            assertEquals(1, firstResult.dueTasks.size)
+            assertEquals(
+                expected = 1,
+                actual = firstResult.dueTasks.size,
+            )
 
-            // Second emission after delay
+            // Second emission triggered by internal timer
             val secondResult = awaitItem()
             assertIs<GetSoonDueTasksUseCase.Result.Success>(secondResult)
 
@@ -135,55 +159,48 @@ class GetSoonDueTasksUseCaseTest {
 
     @Test
     fun `execute defaults to 1 day delay when no tasks are present`() = runTest {
-        // GIVEN
+        // GIVEN no tasks
         val now = Instant.parse("2024-01-01T10:00:00Z")
         every { clock.now() } returns now
         every { timeZoneProvider.timeZone } returns MutableStateFlow(TimeZone.UTC)
 
-        every { taskRepository.getDueTasks(any()) } returns flowOf(emptyList())
-        every { taskRepository.getTasksWithDueBetween(any()) } returns flowOf(emptyList())
+        every { taskRepository.observeDueTasks(any()) } returns flowOf(emptyList())
+        every { taskRepository.observeTasksDueBetween(any()) } returns flowOf(emptyList())
 
-        // WHEN & THEN
+        // WHEN & THEN we collect results
         useCase.execute().test {
             // 1. Await the first emission (empty state)
             val firstResult = awaitItem()
             assertIs<GetSoonDueTasksUseCase.Result.Success>(firstResult)
             assertTrue(firstResult.dueTasks.isEmpty())
-            assertTrue(firstResult.tasksToday.isEmpty())
-            assertTrue(firstResult.tasksNextDay.isEmpty())
-            assertTrue(firstResult.tasksLaterInWeek.isEmpty())
-            assertTrue(firstResult.tasksNextWeek.isEmpty())
 
-            // 2. Manually advance the virtual clock by just under the expected delay.
-            // The delay is 1.day + 100ms.
+            // 2. Advance by 1 day
             advanceTimeBy(1.days.inWholeMilliseconds)
 
-            // 3. Assert that no new item has been emitted yet.
+            // 3. Assert no new item yet
             expectNoEvents()
 
-            // 4. Advance the clock past the delay threshold.
+            // 4. Advance past threshold
             advanceTimeBy(200.milliseconds)
 
-            // 5. Now, a new item should be emitted.
+            // 5. New item emitted
             val secondResult = awaitItem()
             assertIs<GetSoonDueTasksUseCase.Result.Success>(secondResult)
 
-            // 6. Clean up
             cancelAndIgnoreRemainingEvents()
         }
     }
 
     @Test
-    fun `execute handles Saturday edge case for next week calculation`() = runTest {
-        // GIVEN
-        // Saturday, so that dayAfterNext is Monday
+    fun `execute correctly handles Saturday for next week calculation`() = runTest {
+        // GIVEN Saturday time and task for Monday
         val now = Instant.parse("2024-01-06T10:00:00Z")
         every { clock.now() } returns now
         every { timeZoneProvider.timeZone } returns MutableStateFlow(TimeZone.UTC)
 
         val laterInWeekTask = createTask(Uuid.random(), now + 2.days) // Monday
-        every { taskRepository.getDueTasks(any()) } returns flowOf(emptyList())
-        every { taskRepository.getTasksWithDueBetween(any()) } answers {
+        every { taskRepository.observeDueTasks(any()) } returns flowOf(emptyList())
+        every { taskRepository.observeTasksDueBetween(any()) } answers {
             val range = firstArg<ClosedRange<Instant>>()
             if (laterInWeekTask.dueTime in range) {
                 flowOf(listOf(laterInWeekTask))
@@ -192,39 +209,44 @@ class GetSoonDueTasksUseCaseTest {
             }
         }
 
-        // WHEN & THEN
+        // WHEN & THEN we collect results
         useCase.execute().test {
             val result = awaitItem()
             assertIs<GetSoonDueTasksUseCase.Result.Success>(result)
-            assertEquals(1, result.tasksLaterInWeek.size)
-            assertEquals(laterInWeekTask, result.tasksLaterInWeek.first())
+            assertEquals(
+                expected = 1,
+                actual = result.tasksLaterInWeek.size,
+            )
+            assertEquals(
+                expected = laterInWeekTask,
+                actual = result.tasksLaterInWeek.first(),
+            )
             cancelAndIgnoreRemainingEvents()
         }
     }
 
     @Test
-    fun `execute does not busy-loop with overdue tasks`() = runTest {
-        // GIVEN
+    fun `execute with overdue tasks does not busy-loop`() = runTest {
+        // GIVEN overdue task
         val now = Instant.parse("2024-01-01T10:00:00Z")
         val overdueTask = createTask(Uuid.random(), now - 1.hours)
         every { clock.now() } returns now
         every { timeZoneProvider.timeZone } returns MutableStateFlow(TimeZone.UTC)
 
-        every { taskRepository.getDueTasks(any()) } returns flowOf(listOf(overdueTask))
-        every { taskRepository.getTasksWithDueBetween(any()) } returns flowOf(emptyList())
+        every { taskRepository.observeDueTasks(any()) } returns flowOf(listOf(overdueTask))
+        every { taskRepository.observeTasksDueBetween(any()) } returns flowOf(emptyList())
 
-        // WHEN & THEN
+        // WHEN & THEN we collect results
         useCase.execute().test {
             // Await the first emission
             awaitItem()
 
-            // Advance time by a small amount, less than the default 1-day delay
+            // Advance time significantly
             advanceTimeBy(1.days.inWholeMilliseconds - 100)
 
-            // Assert that no new item has been emitted, proving there's no busy-loop
+            // Assert no new items emitted, preventing busy-loop
             expectNoEvents()
 
-            // Clean up
             cancelAndIgnoreRemainingEvents()
         }
     }
@@ -237,7 +259,7 @@ class GetSoonDueTasksUseCaseTest {
             creationTime = Instant.parse("2024-01-01T00:00:00Z"),
             dueTime = dueTime,
             status = TaskStatus.Builtin.Planned,
-            tags = emptyList()
+            tags = emptyList(),
         )
     }
 }

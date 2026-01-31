@@ -18,32 +18,34 @@ class DeleteTaskUseCaseTest {
     private val useCase = DeleteTaskUseCase(taskRepository)
 
     @Test
-    fun `execute deletes task and returns Success`() = runTest {
-        // GIVEN
+    fun `execute with existing taskId returns Success`() = runTest {
+        // GIVEN existing task id and repository that succeeds
         val taskId = TaskId(Uuid.random())
-        coEvery { taskRepository.deleteTask(taskId) } returns Unit
+        coEvery { taskRepository.deleteTask(taskId) } returns Result.success(Unit)
 
-        // WHEN
+        // WHEN we execute use case
         val result = useCase.execute(taskId)
 
-        // THEN
+        // THEN result is Success
         assertIs<DeleteTaskUseCase.Result.Success>(result)
-        assertEquals(taskId, result.taskId)
         coVerify { taskRepository.deleteTask(taskId) }
     }
 
     @Test
-    fun `execute returns Error when repository fails`() = runTest {
-        // GIVEN
+    fun `execute with repository failure returns Error`() = runTest {
+        // GIVEN task id and repository that fails
         val taskId = TaskId(Uuid.random())
         val exception = RuntimeException("DB Error")
-        coEvery { taskRepository.deleteTask(taskId) } throws exception
+        coEvery { taskRepository.deleteTask(taskId) } returns Result.failure(exception)
 
-        // WHEN
+        // WHEN we execute use case
         val result = useCase.execute(taskId)
 
-        // THEN
+        // THEN result is error with caught exception
         assertIs<DeleteTaskUseCase.Result.Error>(result)
-        assertEquals(exception, result.error)
+        assertEquals(
+            expected = exception,
+            actual = result.error,
+        )
     }
 }

@@ -5,18 +5,14 @@ import timemate.client.tasks.domain.TaskId
 class DeleteTaskUseCase(
     private val taskRepository: TaskRepository
 ) {
-    @Suppress("detekt.TooGenericExceptionCaught")
     suspend fun execute(taskId: TaskId): Result {
-        return try {
-            taskRepository.deleteTask(taskId)
-            Result.Success(taskId)
-        } catch (e: Exception) {
-            Result.Error(e)
-        }
+        return taskRepository.deleteTask(taskId)
+            .map { Result.Success }
+            .getOrElse { throwable -> Result.Error(throwable) }
     }
 
     sealed interface Result {
-        data class Success(val taskId: TaskId) : Result
+        data object Success : Result
         data class Error(val error: Throwable) : Result
     }
 }
