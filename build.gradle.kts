@@ -5,11 +5,7 @@ plugins {
     alias(libs.plugins.compose) apply false
 }
 
-kover {
-    merge {
-        allProjects()
-    }
-}
+kover.merge.allProjects()
 
 val installGitHooks by tasks.registering(Copy::class) {
     group = "git"

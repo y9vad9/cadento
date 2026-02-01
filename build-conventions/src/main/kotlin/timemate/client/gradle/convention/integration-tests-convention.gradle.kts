@@ -28,7 +28,7 @@ kotlin {
     }
 }
 
-tasks.register<Test>("integrationTest") {
+val jvmIntegrationTest = tasks.register<Test>("jvmIntegrationTest") {
     description = "Runs JVM integration tests"
     group = LifecycleBasePlugin.VERIFICATION_GROUP
 
@@ -45,4 +45,8 @@ tasks.register<Test>("integrationTest") {
     )
 
     shouldRunAfter(tasks.named("jvmTest"))
+}
+
+tasks.check {
+    dependsOn(jvmIntegrationTest)
 }
