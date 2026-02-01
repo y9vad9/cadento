@@ -9,4 +9,6 @@ dependencies {
 
     jvmTestImplementation(libs.turbine)
     jvmTestImplementation(libs.koin.test)
+    jvmTestImplementation(libs.sqldelight.jvm.driver)
+    jvmTestImplementation(libs.xerial.sqlite.jdbc)
 }

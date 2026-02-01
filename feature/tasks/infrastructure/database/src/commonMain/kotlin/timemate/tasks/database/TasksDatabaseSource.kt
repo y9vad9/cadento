@@ -5,22 +5,8 @@ import app.cash.sqldelight.async.coroutines.awaitAsOneOrNull
 import app.cash.sqldelight.coroutines.asFlow
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import timemate.tasks.sqldelight.SelectDueTasksAsc
-import timemate.tasks.sqldelight.SelectDueTasksDesc
 import timemate.tasks.sqldelight.TaskDatabase
 import kotlin.uuid.Uuid
-
-/**
- * Represent a set of changes to apply to a task.
- * Fields are optional; only non-null fields will be updated.
- */
-data class DbTaskPatch(
-    val name: String? = null,
-    val description: String? = null,
-    val due: String? = null,
-    val statusId: Long? = null,
-    val tags: List<String>? = null,
-)
 
 class TasksDatabaseSource(
     private val database: TaskDatabase,
@@ -104,7 +90,7 @@ class TasksDatabaseSource(
         return query
             .asFlow()
             .map { cursor ->
-                val rows = cursor.executeAsList().map { queryMapper.fromSelectTasksFiltered(it) }
+                val rows = cursor.awaitAsList().map { queryMapper.fromSelectTasksFiltered(it) }
                 attachTags(rows)
             }
     }

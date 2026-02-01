@@ -12,6 +12,7 @@ import timemate.tasks.database.SqlDelightQueryMapper
 import timemate.tasks.database.SqlDelightTaskMapper
 import timemate.tasks.database.TasksDatabaseSource
 import timemate.tasks.sqldelight.TaskDatabase
+import java.io.File
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -25,10 +26,12 @@ class TasksDatabaseSourceTest {
     private lateinit var driver: JdbcSqliteDriver
     private lateinit var database: TaskDatabase
     private lateinit var source: TasksDatabaseSource
+    private lateinit var tempFile: File
 
     @BeforeTest
     fun setup() = runTest {
-        driver = JdbcSqliteDriver(JdbcSqliteDriver.IN_MEMORY)
+        tempFile = File.createTempFile("tasks-test", ".db")
+        driver = JdbcSqliteDriver("jdbc:sqlite:${tempFile.absolutePath}")
         TaskDatabase.Schema.create(driver).await()
         database = TaskDatabase(driver)
         source = TasksDatabaseSource(
@@ -57,6 +60,7 @@ class TasksDatabaseSourceTest {
     @AfterTest
     fun tearDown() {
         driver.close()
+        tempFile.delete()
     }
 
     @Test
