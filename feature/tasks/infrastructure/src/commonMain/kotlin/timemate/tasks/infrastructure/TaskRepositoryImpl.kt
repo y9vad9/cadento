@@ -3,11 +3,11 @@ package timemate.tasks.infrastructure
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
-import timemate.client.tasks.application.TaskFilter
-import timemate.client.tasks.application.TaskRepository
-import timemate.client.tasks.application.TaskSort
-import timemate.client.tasks.domain.Task
-import timemate.client.tasks.domain.TaskId
+import timemate.tasks.application.TaskFilter
+import timemate.tasks.application.TaskRepository
+import timemate.tasks.application.TaskSort
+import timemate.tasks.domain.Task
+import timemate.tasks.domain.TaskId
 import timemate.coroutines.suspendRunCatching
 import timemate.tasks.database.DbTask
 import timemate.tasks.database.DbTaskPatch

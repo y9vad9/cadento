@@ -1,16 +1,16 @@
 
 package timemate.tasks.infrastructure
 
-import timemate.client.tasks.application.TaskFilter
-import timemate.client.tasks.application.TaskSort
-import timemate.client.tasks.domain.Task
-import timemate.client.tasks.domain.TaskDescription
-import timemate.client.tasks.domain.TaskId
-import timemate.client.tasks.domain.TaskName
-import timemate.client.tasks.domain.TaskStatus
-import timemate.client.tasks.domain.TaskStatusId
-import timemate.client.tasks.domain.TaskStatusName
-import timemate.client.tasks.domain.TaskTag
+import timemate.tasks.application.TaskFilter
+import timemate.tasks.application.TaskSort
+import timemate.tasks.domain.Task
+import timemate.tasks.domain.TaskDescription
+import timemate.tasks.domain.TaskId
+import timemate.tasks.domain.TaskName
+import timemate.tasks.domain.TaskStatus
+import timemate.tasks.domain.TaskStatusId
+import timemate.tasks.domain.TaskStatusName
+import timemate.tasks.domain.TaskTag
 import timemate.tasks.database.DbTask
 import timemate.tasks.database.DbTaskFilter
 import timemate.tasks.database.DbTaskSort
