@@ -45,7 +45,7 @@ class TaskRepositoryImpl(
                 tags = task.tags.map { it.string },
             ),
         )
-        task
+        getTask(task.id).getOrThrow()
     }
 
     override suspend fun deleteTask(taskId: TaskId): Result<Unit> = suspendRunCatching {

@@ -1,12 +1,8 @@
 package timemate.client.gradle.convention
 
-import org.gradle.accessors.dm.LibrariesForLibs
-
 plugins {
     id("timemate.client.gradle.convention.tests-convention")
 }
-
-val libs = the<LibrariesForLibs>()
 
 tasks.register<Test>("jvmIntegrationTest") {
     description = "Runs JVM integration tests"

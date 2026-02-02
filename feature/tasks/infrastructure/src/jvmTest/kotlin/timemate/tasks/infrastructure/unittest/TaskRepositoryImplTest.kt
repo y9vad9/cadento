@@ -90,20 +90,26 @@ class TaskRepositoryImplTest {
     }
 
     @Test
-    fun `updateTask with valid task returns Success and updated task`() = runTest {
+    fun `updateTask with valid task returns Success and fetched updated task`() = runTest {
         // GIVEN a task and database source that succeeds
         val task = createTask()
+        val dbTask = createDbTask()
+        
         coEvery {
             databaseSource.updateTask(
                 id = any(),
                 patch = any(),
             )
         } returns Unit
+        
+        // Mock getTask behavior (calls observeTask)
+        coEvery { databaseSource.observeTask(task.id.value) } returns flowOf(dbTask)
+        every { dbTaskMapper.mapToDomain(dbTask) } returns task
 
         // WHEN we call updateTask
         val result = repository.updateTask(task)
 
-        // THEN result is success with updated task instance
+        // THEN result is success with updated task instance from DB
         assertTrue(result.isSuccess)
         assertEquals(
             expected = task,
@@ -120,7 +126,27 @@ class TaskRepositoryImplTest {
                     tags = task.tags.map { it.string },
                 ),
             )
+            databaseSource.observeTask(task.id.value)
         }
+    }
+
+    @Test
+    fun `updateTask returns success with null if task was deleted during update`() = runTest {
+        // GIVEN a task but database returns null on subsequent fetch
+        val task = createTask()
+        
+        coEvery {
+            databaseSource.updateTask(any(), any())
+        } returns Unit
+        
+        coEvery { databaseSource.observeTask(task.id.value) } returns flowOf(null)
+
+        // WHEN we call updateTask
+        val result = repository.updateTask(task)
+
+        // THEN result is success with null (meaning task not found)
+        assertTrue(result.isSuccess)
+        assertNull(result.getOrNull())
     }
 
     @Test
