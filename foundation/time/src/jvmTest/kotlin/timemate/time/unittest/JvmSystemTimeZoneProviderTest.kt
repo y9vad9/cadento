@@ -1,4 +1,4 @@
-package timemate.time.integrationtest
+package timemate.time.unittest
 
 import app.cash.turbine.test
 import io.mockk.every
@@ -34,7 +34,7 @@ class JvmSystemTimeZoneProviderTest {
     @Test
     fun `timeZone returns current system timezone initially`() = runTest {
         // GIVEN a mocked system timezone
-        val expectedTz = JTimeZone.getTimeZone("UTC")
+        val expectedTz = JTimeZone.getTimeZone("Europe/Berlin")
         every { JTimeZone.setDefault(null) } returns Unit
         every { JTimeZone.getDefault() } returns expectedTz
 
@@ -58,7 +58,7 @@ class JvmSystemTimeZoneProviderTest {
         // GIVEN a provider with short poll interval and mocked timezones
         val pollInterval = 1.seconds
         val initialTz = JTimeZone.getTimeZone("UTC")
-        val updatedTz = JTimeZone.getTimeZone("GMT+01:00")
+        val updatedTz = JTimeZone.getTimeZone("Europe/Berlin")
         
         every { JTimeZone.setDefault(null) } returns Unit
         every { JTimeZone.getDefault() } returns initialTz
