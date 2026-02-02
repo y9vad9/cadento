@@ -1,5 +1,5 @@
 plugins {
-    id(conventions.feature.application)
+    id(conventions.application)
 }
 
 dependencies {

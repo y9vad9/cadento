@@ -5,11 +5,11 @@ import app.cash.turbine.test
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import kotlin.time.Instant
-import timemate.client.tasks.domain.Task
-import timemate.client.tasks.domain.TaskDescription
-import timemate.client.tasks.domain.TaskId
-import timemate.client.tasks.domain.TaskName
-import timemate.client.tasks.domain.TaskStatus
+import timemate.tasks.domain.Task
+import timemate.tasks.domain.TaskDescription
+import timemate.tasks.domain.TaskId
+import timemate.tasks.domain.TaskName
+import timemate.tasks.domain.TaskStatus
 import timemate.tasks.database.SqlDelightQueryMapper
 import timemate.tasks.database.SqlDelightTaskMapper
 import timemate.tasks.database.TasksDatabaseSource

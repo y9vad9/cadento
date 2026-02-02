@@ -5,7 +5,7 @@ import org.koin.core.annotation.KoinExperimentalAPI
 import org.koin.ksp.generated.module
 import org.koin.test.KoinTest
 import org.koin.test.verify.verify
-import timemate.client.tasks.application.TimeZoneProvider
+import timemate.tasks.application.TimeZoneProvider
 import timemate.tasks.infrastructure.TaskFeatureModule
 import kotlin.test.Test
 import kotlin.time.Clock

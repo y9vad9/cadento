@@ -1,9 +1,9 @@
 package timemate.tasks.infrastructure.unittest
 
-import timemate.client.tasks.application.TaskFilter
-import timemate.client.tasks.application.TaskSort
-import timemate.client.tasks.domain.TaskStatus
-import timemate.client.tasks.domain.TaskTag
+import timemate.tasks.application.TaskFilter
+import timemate.tasks.application.TaskSort
+import timemate.tasks.domain.TaskStatus
+import timemate.tasks.domain.TaskTag
 import timemate.tasks.database.DbTask
 import timemate.tasks.database.DbTaskFilter
 import timemate.tasks.database.DbTaskSort

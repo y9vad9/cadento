@@ -204,3 +204,4 @@ google-ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 # Code Quality
 # ───────────────────────────────────────────────────────────────────────────────
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
+kover = { id = "org.jetbrains.kotlinx.kover", version.ref = "kover" }
