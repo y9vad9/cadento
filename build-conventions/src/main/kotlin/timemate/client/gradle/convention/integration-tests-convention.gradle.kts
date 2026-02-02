@@ -1,7 +1,6 @@
 package timemate.client.gradle.convention
 
 import org.gradle.accessors.dm.LibrariesForLibs
-import org.jetbrains.kotlin.gradle.targets.jvm.KotlinJvmTarget
 
 plugins {
     id("timemate.client.gradle.convention.tests-convention")
@@ -9,44 +8,18 @@ plugins {
 
 val libs = the<LibrariesForLibs>()
 
-kotlin {
-    val jvmCompilations = targets.getByName("jvm").compilations
-
-    targets.named<KotlinJvmTarget>("jvm") {
-        compilations.create("integrationTest") {
-            associateWith(jvmCompilations["test"])
-            defaultSourceSet {
-                kotlin.srcDir("src/jvmIntegrationTest/kotlin")
-                resources.srcDir("src/jvmIntegrationTest/resources")
-
-                dependencies {
-                    implementation(libs.kotlin.test)
-                    implementation(libs.kotlin.test.junit5)
-                }
-            }
-        }
-    }
-}
-
-val jvmIntegrationTest = tasks.register<Test>("jvmIntegrationTest") {
+tasks.register<Test>("jvmIntegrationTest") {
     description = "Runs JVM integration tests"
     group = LifecycleBasePlugin.VERIFICATION_GROUP
 
     useJUnitPlatform()
 
-    val compilation =
-        kotlin.targets["jvm"]
-            .compilations["integrationTest"]
+    val jvmTest = tasks.named<Test>("jvmTest").get()
+    testClassesDirs = jvmTest.testClassesDirs
+    classpath = jvmTest.classpath
 
-    testClassesDirs = compilation.output.classesDirs
-    classpath = files(
-        compilation.output.allOutputs,
-        compilation.runtimeDependencyFiles
-    )
-
-    shouldRunAfter(tasks.named("jvmTest"))
-}
-
-tasks.check {
-    dependsOn(jvmIntegrationTest)
+    filter {
+        includeTestsMatching("timemate.**.integrationtest.**")
+        isFailOnNoMatchingTests = false
+    }
 }
