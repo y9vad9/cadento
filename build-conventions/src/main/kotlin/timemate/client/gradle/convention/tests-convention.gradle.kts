@@ -11,9 +11,23 @@ val libs = the<LibrariesForLibs>()
 dependencies {
     commonTestImplementation(libs.kotlinx.coroutines.test)
     commonTestImplementation(libs.kotlin.test)
-    "jvmMainImplementation"(libs.mockk)
+    "jvmTestImplementation"(libs.mockk)
 }
 
-tasks.withType<Test> {
+tasks.withType<Test>().configureEach {
     useJUnitPlatform()
+}
+
+tasks.register<Test>("jvmUnitTest") {
+    description = "Runs JVM unit tests"
+    group = LifecycleBasePlugin.VERIFICATION_GROUP
+
+    val jvmTest = tasks.named<Test>("jvmTest").get()
+    testClassesDirs = jvmTest.testClassesDirs
+    classpath = jvmTest.classpath
+
+    filter {
+        includeTestsMatching("timemate.**.unittest.**")
+        isFailOnNoMatchingTests = false
+    }
 }

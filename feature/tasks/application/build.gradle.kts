@@ -3,7 +3,7 @@ plugins {
 }
 
 dependencies {
-    commonMainImplementation(projects.feature.tasks.domain)
+    commonMainApi(projects.feature.tasks.domain)
     commonMainImplementation(libs.kotlinx.coroutines)
     commonMainImplementation(libs.kotlinx.datetime)
 

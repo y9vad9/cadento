@@ -5,14 +5,10 @@ import timemate.client.tasks.domain.Task
 class CreateTaskUseCase(
     private val taskRepository: TaskRepository
 ) {
-    @Suppress("detekt.TooGenericExceptionCaught")
     suspend fun execute(task: Task): Result {
-        return try {
-            taskRepository.createTask(task)
-            Result.Success(task)
-        } catch (e: Exception) {
-            Result.Error(e)
-        }
+        return taskRepository.createTask(task)
+            .map { Result.Success(task) }
+            .getOrElse { Result.Error(it) }
     }
 
     sealed interface Result {
