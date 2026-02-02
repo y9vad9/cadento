@@ -6,14 +6,17 @@ import kotlinx.coroutines.flow.map
 import timemate.client.tasks.domain.Task
 import timemate.client.tasks.domain.TaskStatus
 import timemate.client.tasks.domain.TaskTag
+import kotlin.time.Clock
 
 class GetTasksByTagAndStatusUseCase(
-    private val taskRepository: TaskRepository
+    private val taskRepository: TaskRepository,
+    private val clock: Clock,
 ) {
     fun execute(tag: TaskTag? = null, status: TaskStatus? = null): Flow<Result> {
-        return taskRepository.getTasks(
+        return taskRepository.observeTasks(
             filter = TaskFilter(tag = tag, status = status),
-            sort = TaskSort.ByDueTimeAsc
+            sort = TaskSort.ByDueTimeAsc,
+            now = clock.now()
         ).map<_, Result> { tasks ->
             Result.Success(tasks)
         }.catch { e ->

@@ -5,11 +5,7 @@ plugins {
     alias(libs.plugins.compose) apply false
 }
 
-kover {
-    merge {
-        allProjects()
-    }
-}
+kover.merge.allProjects()
 
 val installGitHooks by tasks.registering(Copy::class) {
     group = "git"
@@ -21,7 +17,6 @@ val installGitHooks by tasks.registering(Copy::class) {
     from(srcDir)
     into(dstDir)
 
-    // Make copied files executable
     filesMatching("*") {
         file.setExecutable(true)
     }

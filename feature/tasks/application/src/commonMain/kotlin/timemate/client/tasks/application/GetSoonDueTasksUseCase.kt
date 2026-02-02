@@ -10,20 +10,12 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.isActive
-import kotlinx.datetime.DatePeriod
-import kotlinx.datetime.DayOfWeek
-import kotlinx.datetime.LocalDateTime
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.atTime
-import kotlinx.datetime.plus
-import kotlinx.datetime.toInstant
-import kotlinx.datetime.toLocalDateTime
 import timemate.client.tasks.domain.Task
+import timemate.client.tasks.domain.TaskDuePolicy
 import kotlin.time.Clock
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.milliseconds
-import kotlin.time.Duration.Companion.nanoseconds
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.Instant
 
@@ -42,15 +34,13 @@ class GetSoonDueTasksUseCase(
                 while (isActive) {
                     forceUpdates.collectLatest {
                         val now = clock.now()
-                        val currentLocalDateTime = now.toLocalDateTime(timeZone)
+                        val ranges = TaskDuePolicy.calculateDateRanges(now, timeZone)
 
-                        val ranges = calculateDateRanges(currentLocalDateTime, timeZone)
-
-                        val dueTasksFlow = taskRepository.getDueTasks(now)
-                        val todayTasksFlow = taskRepository.getTasksWithDueBetween(ranges.today)
-                        val nextDayTasksFlow = taskRepository.getTasksWithDueBetween(ranges.nextDay)
-                        val laterInWeekTasksFlow = taskRepository.getTasksWithDueBetween(ranges.laterInWeek)
-                        val nextWeekTasksFlow = taskRepository.getTasksWithDueBetween(ranges.nextWeek)
+                        val dueTasksFlow = taskRepository.observeDueTasks(now)
+                        val todayTasksFlow = taskRepository.observeTasksDueBetween(ranges.today)
+                        val nextDayTasksFlow = taskRepository.observeTasksDueBetween(ranges.nextDay)
+                        val laterInWeekTasksFlow = taskRepository.observeTasksDueBetween(ranges.laterInWeek)
+                        val nextWeekTasksFlow = taskRepository.observeTasksDueBetween(ranges.nextWeek)
 
                         combine(
                             dueTasksFlow,
@@ -93,46 +83,6 @@ class GetSoonDueTasksUseCase(
             .minOfOrNull { it.dueTime } ?: now.plus(1.days)
 
         return (nextTriggerTime - now).coerceAtLeast(1.seconds) + 100.milliseconds
-    }
-
-    private data class DateRanges(
-        val today: ClosedRange<Instant>,
-        val nextDay: ClosedRange<Instant>,
-        val laterInWeek: ClosedRange<Instant>,
-        val nextWeek: ClosedRange<Instant>,
-    )
-
-    private fun calculateDateRanges(currentLocalDateTime: LocalDateTime, timeZone: TimeZone): DateRanges {
-        val currentDate = currentLocalDateTime.date
-
-        val nextDayDate = currentDate.plus(DatePeriod(days = 1))
-        val endOfToday = nextDayDate.atTime(0, 0).toInstant(timeZone) - 1.nanoseconds
-        val todayRange = currentLocalDateTime.toInstant(timeZone)..endOfToday
-
-        val nextDayStart = nextDayDate.atTime(0, 0).toInstant(timeZone)
-        val endOfNextDay = nextDayDate.plus(DatePeriod(days = 1)).atTime(0, 0).toInstant(timeZone) - 1.nanoseconds
-        val nextDayRange = nextDayStart..endOfNextDay
-
-        val dayAfterNext = nextDayDate.plus(DatePeriod(days = 1))
-        val endOfWeekDate = dayAfterNext.plus(
-            DatePeriod(days = DayOfWeek.SUNDAY.ordinal - dayAfterNext.dayOfWeek.ordinal)
-        )
-        val laterInWeekStart = dayAfterNext.atTime(0, 0).toInstant(timeZone)
-        val laterInWeekEnd = endOfWeekDate.plus(DatePeriod(days = 1)).atTime(0, 0).toInstant(timeZone) - 1.nanoseconds
-        val laterInWeekRange = laterInWeekStart..laterInWeekEnd
-
-        val nextMonday = endOfWeekDate.plus(DatePeriod(days = 1))
-        val nextSunday = nextMonday.plus(DatePeriod(days = 6))
-        val nextWeekStart = nextMonday.atTime(0, 0).toInstant(timeZone)
-        val nextWeekEnd = nextSunday.plus(DatePeriod(days = 1)).atTime(0, 0).toInstant(timeZone) - 1.nanoseconds
-        val nextWeekRange = nextWeekStart..nextWeekEnd
-
-        return DateRanges(
-            today = todayRange,
-            nextDay = nextDayRange,
-            laterInWeek = laterInWeekRange,
-            nextWeek = nextWeekRange
-        )
     }
 
     sealed interface Result {

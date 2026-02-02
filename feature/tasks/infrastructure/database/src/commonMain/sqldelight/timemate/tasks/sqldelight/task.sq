@@ -1,0 +1,132 @@
+CREATE TABLE IF NOT EXISTS PersistedTask (
+  id            BLOB PRIMARY KEY,
+  name          TEXT NOT NULL,
+  description   TEXT NOT NULL,
+  createdAt     TEXT NOT NULL,
+  due           TEXT NOT NULL,
+  statusId      INTEGER NOT NULL,
+  FOREIGN KEY (statusId) REFERENCES PersistedTaskStatus(statusId)
+);
+
+CREATE TABLE IF NOT EXISTS PersistedTaskTag (
+  taskId BLOB NOT NULL,
+  tag     TEXT NOT NULL,
+  PRIMARY KEY (taskId, tag),
+  FOREIGN KEY (taskId) REFERENCES PersistedTask(id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS PersistedTaskStatus (
+  statusId   INTEGER PRIMARY KEY,
+  statusName TEXT NOT NULL
+);
+
+CREATE INDEX IF NOT EXISTS index_task_due ON PersistedTask(due);
+CREATE INDEX IF NOT EXISTS index_task_createdAt ON PersistedTask(createdAt);
+
+selectTaskById:
+SELECT t.id, t.name, t.description, t.createdAt, t.due, t.statusId, s.statusName AS status
+FROM PersistedTask t
+JOIN PersistedTaskStatus s ON t.statusId = s.statusId
+WHERE t.id = :id;
+
+selectTasksByIds:
+SELECT t.id, t.name, t.description, t.createdAt, t.due, t.statusId, s.statusName AS status
+FROM PersistedTask t
+JOIN PersistedTaskStatus s ON t.statusId = s.statusId
+WHERE t.id IN :ids;
+
+selectDueTasksAsc:
+SELECT t.id, t.name, t.description, t.createdAt, t.due, t.statusId, s.statusName AS status
+FROM PersistedTask t
+JOIN PersistedTaskStatus s ON t.statusId = s.statusId
+WHERE t.due <= :now
+ORDER BY t.due ASC;
+
+selectDueTasksDesc:
+SELECT t.id, t.name, t.description, t.createdAt, t.due, t.statusId, s.statusName AS status
+FROM PersistedTask t
+JOIN PersistedTaskStatus s ON t.statusId = s.statusId
+WHERE t.due <= :now
+ORDER BY t.due DESC;
+
+selectTasksDueInRangeAsc:
+SELECT t.id, t.name, t.description, t.createdAt, t.due, t.statusId, s.statusName AS status
+FROM PersistedTask t
+JOIN PersistedTaskStatus s ON t.statusId = s.statusId
+WHERE t.due BETWEEN :from AND :to
+ORDER BY t.due ASC;
+
+selectTagsForTasks:
+SELECT taskId, tag
+FROM PersistedTaskTag
+WHERE taskId IN :taskIds
+ORDER BY tag ASC;
+
+selectTagsForTask:
+SELECT taskId, tag
+FROM PersistedTaskTag
+WHERE taskId = :taskId
+ORDER BY tag ASC;
+
+insertTask:
+INSERT INTO PersistedTask(
+  id,
+  name,
+  description,
+  createdAt,
+  due,
+  statusId
+) VALUES (
+  ?,
+  ?,
+  ?,
+  ?,
+  ?,
+  ?
+);
+
+updateTask:
+UPDATE PersistedTask
+SET
+    name        = COALESCE(:name, name),
+    description = COALESCE(:description, description),
+    due         = COALESCE(:due, due),
+    statusId    = COALESCE(:statusId, statusId)
+WHERE id = :id;
+
+deleteTaskById:
+DELETE FROM PersistedTask
+WHERE id = :id;
+
+deleteTasksByIds:
+DELETE FROM PersistedTask
+WHERE id IN :ids;
+
+insertTaskTag:
+INSERT INTO PersistedTaskTag(taskId, tag)
+VALUES (?, ?);
+
+deleteTagsForTask:
+DELETE FROM PersistedTaskTag
+WHERE taskId = :taskId;
+
+selectTasksFiltered:
+SELECT DISTINCT
+       t.id,
+       t.name,
+       t.description,
+       t.createdAt,
+       t.due,
+       t.statusId,
+       s.statusName AS status
+FROM PersistedTask AS t
+JOIN PersistedTaskStatus s ON t.statusId = s.statusId
+LEFT JOIN PersistedTaskTag AS tt ON t.id = tt.taskId
+WHERE (:dueBefore IS NULL OR t.due <= :dueBefore)
+  AND (:tag IS NULL OR tt.tag = :tag)
+  AND (:statusId IS NULL OR t.statusId = :statusId)
+ORDER BY
+    CASE WHEN :sort = 'BY_CREATION_ASC'  THEN t.createdAt END ASC,
+    CASE WHEN :sort = 'BY_CREATION_DESC' THEN t.createdAt END DESC,
+    CASE WHEN :sort = 'BY_DUE_ASC'       THEN t.due END ASC,
+    CASE WHEN :sort = 'BY_DUE_DESC'      THEN t.due END DESC;

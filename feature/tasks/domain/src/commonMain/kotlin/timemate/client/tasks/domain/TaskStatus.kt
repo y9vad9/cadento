@@ -90,9 +90,6 @@ sealed interface TaskStatus {
             require(!id.isBuiltin()) {
                 "Custom task status cannot have any of the builtin status ids."
             }
-            require(!name.isBuiltin()) {
-                "Custom task cannot have the same name as builtin one."
-            }
         }
     }
 }
