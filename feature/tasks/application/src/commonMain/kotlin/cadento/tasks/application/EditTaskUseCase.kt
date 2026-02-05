@@ -1,0 +1,59 @@
+package cadento.tasks.application
+
+import cadento.tasks.domain.Task
+import cadento.tasks.domain.TaskDescription
+import cadento.tasks.domain.TaskId
+import cadento.tasks.domain.TaskName
+import cadento.tasks.domain.TaskStatus
+import cadento.tasks.domain.TaskTag
+import kotlin.time.Instant
+
+class EditTaskUseCase(
+    private val taskRepository: TaskRepository
+) {
+    suspend fun execute(
+        taskId: TaskId,
+        patch: TaskPatch,
+    ): Result {
+        val task = taskRepository.getTask(taskId)
+            .getOrElse { return Result.Error(it) }
+            ?: return Result.TaskNotFound
+
+        val updatedTask = task
+            .let { patch.newName?.let(it::rename) ?: it }
+            .let { patch.newDescription?.let(it::changeDescription) ?: it }
+            .let { patch.newStatus?.let(it::markAs) ?: it }
+            .let { patch.newTags?.let(it::updateTags) ?: it }
+            .let { applyDueTime(it, patch.newDueTime) ?: return Result.InvalidDueTime }
+
+        val resultTask = taskRepository.updateTask(updatedTask)
+            .getOrElse { return Result.Error(it) }
+            ?: return Result.TaskNotFound
+
+        return Result.Success(resultTask)
+    }
+
+    private fun applyDueTime(task: Task, newDueTime: Instant?): Task? {
+        if (newDueTime == null) return task
+
+        return when (val result = task.changeDueTime(newDueTime)) {
+            is Task.ChangeDueTimeResult.Success -> result.task
+            is Task.ChangeDueTimeResult.InvalidTimeRange -> null
+        }
+    }
+
+    data class TaskPatch(
+        val newName: TaskName? = null,
+        val newDescription: TaskDescription? = null,
+        val newDueTime: Instant? = null,
+        val newStatus: TaskStatus? = null,
+        val newTags: List<TaskTag>? = null,
+    )
+
+    sealed interface Result {
+        data class Success(val task: Task) : Result
+        data object TaskNotFound : Result
+        data object InvalidDueTime : Result
+        data class Error(val error: Throwable) : Result
+    }
+}

@@ -13,13 +13,13 @@ val conventions: ConventionNamespace = ConventionNamespace()
  */
 class ConventionNamespace internal constructor(
     /** Convention plugin for domain-layer setup. */
-    val domain: String = "timemate.gradle.domain-convention",
+    val domain: String = "cadento.gradle.domain-convention",
 
     /** Convention plugin for application-layer setup. */
-    val application: String = "timemate.gradle.application-convention",
+    val application: String = "cadento.gradle.application-convention",
 
     /** Convention plugin for UI preview modules. */
-    val uiPreview: String = "timemate.gradle.ui-preview-convention",
+    val uiPreview: String = "cadento.gradle.ui-preview-convention",
 
     /** Kotlin Multiplatform related high-level conventions. */
     val multiplatform: MultiplatformNamespace = MultiplatformNamespace(),
@@ -33,7 +33,7 @@ class ConventionNamespace internal constructor(
  */
 class MultiplatformNamespace internal constructor(
     /** Convention plugin for setting up shared multiplatform libraries. */
-    val library: String = "timemate.gradle.multiplatform-library-convention"
+    val library: String = "cadento.gradle.multiplatform-library-convention"
 )
 
 /**
@@ -41,13 +41,13 @@ class MultiplatformNamespace internal constructor(
  */
 class FeatureNamespace internal constructor(
     /** Convention plugins related to integration-layer concerns like database, network, etc. */
-    val infrastructure: String = "timemate.gradle.infrastructure-convention",
+    val infrastructure: String = "cadento.gradle.infrastructure-convention",
 
     /** Convention plugin for database setup. */
-    val database: String = "timemate.gradle.database-convention",
+    val database: String = "cadento.gradle.database-convention",
 
     /** Convention plugin for presentation-layer setup. */
-    val presentation: String = "timemate.gradle.presentation-convention",
+    val presentation: String = "cadento.gradle.presentation-convention",
 
     /** Convention plugins related to Compose UI setup in feature modules. */
     val compose: FeatureComposeNamespace = FeatureComposeNamespace(),
@@ -58,5 +58,5 @@ class FeatureNamespace internal constructor(
  */
 class FeatureComposeNamespace internal constructor(
     /** Convention plugin for Compose UI setup. */
-    val ui: String = "timemate.gradle.compose-ui-convention"
+    val ui: String = "cadento.gradle.compose-ui-convention"
 )
