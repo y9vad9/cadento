@@ -1,6 +1,6 @@
-![Latest GitHub release](https://img.shields.io/github/v/release/cadentos/app?include_prereleases)
-![GitHub](https://img.shields.io/github/license/cadentos/app)
-![GitHub issues](https://img.shields.io/github/issues/cadentos/app)
+![Latest GitHub release](https://img.shields.io/github/v/release/y9vad9/cadento?include_prereleases)
+![GitHub](https://img.shields.io/github/license/y9vad9/cadento)
+![GitHub issues](https://img.shields.io/github/issues/y9vad9/cadento)
 
 # Cadento
 
