@@ -64,7 +64,7 @@ the UI and domain.
 
 ## Synchronization and Data Flow
 
-TimeMate is designed as a **local-first application**. The client stores all task-related data locally using SQLDelight.
+Cadento is designed as a **local-first application**. The client stores all task-related data locally using SQLDelight.
 The only exceptions are attachments like videos or images, which are loaded lazily.
 
 ### Source of Truth
@@ -116,12 +116,12 @@ features work fully offline by default.
 ### Hosting Options
 
 The backend can be **self-hosted** by the user, giving full control over deployment, data, and integration. This fits
-the philosophy of TimeMate as a privacy-conscious and extensible task management tool.
+the philosophy of Cadento as a privacy-conscious and extensible task management tool.
 
 ## Application Layer
 
 The **application layer** serves as the central point of coordination, connecting all the layers of the code, including
-platform-specific functionality, business logic, and external dependencies. Since TimeMate is a **Kotlin Multiplatform**
+platform-specific functionality, business logic, and external dependencies. Since Cadento is a **Kotlin Multiplatform**
 project, the application layer is designed to run seamlessly across multiple platforms: **Android**, **iOS**, and *
 *Desktop**. The structure of this layer ensures that platform-specific code is minimal and that the core logic remains
 shared across all platforms.

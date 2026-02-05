@@ -16,7 +16,7 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "timemate-app"
+rootProject.name = "cadento"
 
 includeBuild("build-conventions")
 

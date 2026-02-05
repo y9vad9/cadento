@@ -5,7 +5,7 @@ plugins {
 sqldelight {
     databases.create("TaskDatabase") {
         generateAsync = true
-        packageName = "timemate.tasks.sqldelight"
+        packageName = "cadento.tasks.sqldelight"
         dialect(libs.sqldelight.sqlite.dialect)
     }
 }

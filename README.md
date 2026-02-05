@@ -1,10 +1,10 @@
-![Latest GitHub release](https://img.shields.io/github/v/release/timemates/app?include_prereleases)
-![GitHub](https://img.shields.io/github/license/timemates/app)
-![GitHub issues](https://img.shields.io/github/issues/timemates/app)
+![Latest GitHub release](https://img.shields.io/github/v/release/cadentos/app?include_prereleases)
+![GitHub](https://img.shields.io/github/license/cadentos/app)
+![GitHub issues](https://img.shields.io/github/issues/cadentos/app)
 
-# TimeMates App
+# Cadento
 
-TimeMates is a multiplatform productivity application built with Kotlin, Compose, Coroutines, and RSocket (via [rrpc](https://github.com/timemates/rrpc-kotlin)). The application supports team and individual productivity by providing customizable timers, task management, note-taking, and integration capabilities.
+Cadento is a multiplatform productivity application built with Kotlin, Compose, Coroutines, and RSocket (via [rrpc](https://github.com/cadentos/rrpc-kotlin)). The application supports team and individual productivity by providing customizable timers, task management, note-taking, and integration capabilities.
 
 ## Features
 
@@ -22,7 +22,7 @@ TimeMates is a multiplatform productivity application built with Kotlin, Compose
 
 ## Project Status
 
-The project is actively under development. Progress and roadmap updates are available on [our project board](https://github.com/orgs/timemates/projects/7).
+The project is actively under development. Progress and roadmap updates are available on [our project board](https://github.com/orgs/cadentos/projects/7).
 
 ## Contributing
 
