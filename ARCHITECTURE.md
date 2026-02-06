@@ -4,7 +4,7 @@ Cadento is built upon the foundational principles of Hexagonal Architecture and 
 
 ## Core Philosophy
 
-The architecture is centered on the concept of intent. We do not organize code by where it fits into a framework, but by what it represents in the business domain. The system prioritize business concepts over technical convenience, using ubiquitous language to ensure that domain entities and operations use business terminology. This approach prevents technical jargon from leaking into the core logic. For a detailed overview of finding the right balance between these architectural patterns, check this: https://y9vad9.com/en/notes/finding-balance-between-ddd-hexagonal-and-clean-architectures
+The architecture is centered on the concept of intent. We do not organize code by where it fits into a framework, but by what it represents in the business domain. The system prioritizes business concepts over technical convenience, using ubiquitous language to ensure that domain entities and operations use business terminology. This approach prevents technical jargon from leaking into the core logic. For a detailed overview of finding the right balance between these architectural patterns, check this: https://y9vad9.com/en/notes/finding-balance-between-ddd-hexagonal-and-clean-architectures
 
 ## Structural Methodology
 

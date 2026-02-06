@@ -4,7 +4,7 @@ This directory contains the custom Gradle plugins and convention scripts used ac
 
 ## Purpose
 
-The build conventions module centralization common build logic to reduce duplication and maintenance overhead in individual feature modules. Each plugin represents a specific intent or architectural layer, allowing modules to declare their purpose through a single plugin application.
+The build conventions module centralizes common build logic to reduce duplication and maintenance overhead in individual feature modules. Each plugin represents a specific intent or architectural layer, allowing modules to declare their purpose through a single plugin application.
 
 ## Key Conventions
 
