@@ -1,7 +1,6 @@
 # Contributing
 
-This project adheres to the Developer Certificate of Origin (DCO). By contributing to this repository, you certify that
-your contributions comply with the DCO.
+This project adheres to the Developer Certificate of Origin (DCO). By contributing to this repository, you certify that your contributions comply with the DCO.
 
 ## What is the DCO?
 
@@ -26,20 +25,15 @@ git commit -s -m "Your commit message"
 
 ### Web-based Commits
 
-If you contribute via GitHub’s web interface, ensure that you check the box to sign off on the commit when submitting
-your change.
+If you contribute via GitHub’s web interface, ensure that you check the box to sign off on the commit when submitting your change.
 
 ## Why This Matters
 
-Using the DCO helps protect all contributors and maintainers by ensuring that the source of the code is known and
-accepted. It provides legal clarity and helps build a transparent and trustworthy development process.
+Using the DCO helps protect all contributors and maintainers by ensuring that the source of the code is known and accepted. It provides legal clarity and helps build a transparent and trustworthy development process.
 
 ## Enforcement
 
-Pull requests that do not include properly signed-off commits will not be merged. You will be asked to amend your
-commits to include the required sign-off.
-
----
+Pull requests that do not include properly signed-off commits will not be merged. You will be asked to amend your commits to include the required sign-off.
 
 ## Workflow and Best Practices
 
@@ -63,8 +57,8 @@ Accepted `%type%` values:
 
 `%scope%`:
 
-* Should refer to a module, feature, or subsystem (e.g., auth, ui, timer).
-* Use core or common for cross-cutting concerns.
+* Should refer to a specific business area or module (e.g., task, timer, auth).
+* Avoid generic scopes that do not represent a clear domain boundary.
 * Use lowercase, hyphenated words.
 
 `%short-description%`:
@@ -76,10 +70,8 @@ Branches that do not follow this format may be rejected or renamed.
 
 ### Starting Work on Features or Fixes
 
-* Before starting significant work, open a discussion issue to propose the feature or report the bug. This helps avoid
-  duplicate efforts and aligns development with project goals.
-* Smaller fixes or improvements may be submitted directly as pull requests, but discussion is encouraged if the change
-  is substantial.
+* Before starting significant work, open a discussion issue to propose the feature or report the bug. This helps avoid duplicate efforts and aligns development with project goals.
+* Smaller fixes or improvements may be submitted directly as pull requests, but discussion is encouraged if the change is substantial.
 
 ### Pull Requests
 
@@ -92,20 +84,18 @@ Branches that do not follow this format may be rejected or renamed.
 ### Code Style and Quality
 
 * Follow the established coding conventions and best practices. We use default Detekt ruleset to enforce best practices.
-* Write meaningful commit messages. Use this guide for that – https://www.baeldung.com/ops/git-commit-messages.
+* Write meaningful commit messages. Use this guide for that: https://www.baeldung.com/ops/git-commit-messages.
 * Ensure tests cover new features or bug fixes.
 * Run linters and static analysis tools before submitting changes.
 
 ### Documentation
 
-* Update documentation (README, ARCHITECTURE.md, etc.) when your changes affect usage, architecture, or project
-  behavior. Note: such changes should be discussed prior to modifying.
+* Update documentation ([README](README.md), [Architecture](ARCHITECTURE.md), etc.) when your changes affect usage, architecture, or project behavior. Note: such changes should be discussed prior to modifying.
 * Reference documentation issues or requests in your pull request.
 
 ### Additional Resources
 
-* Review the [Architecture Overview](ARCHITECTURE.md) file to understand the project’s architecture and design
-  principles.
+* Review the [Architecture](ARCHITECTURE.md) file to understand the project’s architecture and design principles.
 * Follow the [Code of Conduct](CODE_OF_CONDUCT.md) to maintain a respectful and collaborative community.
 
 Thank you for contributing! Your efforts help improve the project for everyone.

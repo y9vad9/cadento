@@ -4,34 +4,39 @@
 
 # Cadento
 
-Cadento is a multiplatform productivity application built with Kotlin, Compose, Coroutines, and RSocket (via [rrpc](https://github.com/cadentos/rrpc-kotlin)). The application supports team and individual productivity by providing customizable timers, task management, note-taking, and integration capabilities.
+Cadento is a multiplatform productivity application built with Kotlin, Compose Multiplatform, and Coroutines. The application is designed to support both individual and team productivity through a local-first architecture, providing robust task management and customizable timers.
 
-## Features
+## Core Features
 
-- Customizable timers
-    - Create timers tailored to different tasks
-    - Track time efficiently and meet deadlines
-- Task management
-    - Add, track, and manage tasks (TODO lists)
-    - Reference tasks directly within timers
-- Focus Dividend timer
-    - Earn time credits for productive use
-- Data synchronization
-    - Local-first data storage for offline usage
-    - Optional sync server for multi-device synchronization and shared timers
+- Customizable Timers
+    - Create and manage timers tailored to specific workflows.
+    - Track time allocation across different tasks and projects.
+- Task Management
+    - Integrated TODO lists with full lifecycle management.
+    - Direct reference of tasks within active timers for seamless tracking.
+- Focus Dividend Timer
+    - A specialized timer designed to reward deep focus with earned free time.
+    - Configurable coefficients to adapt the earning rate to your personal productivity needs.
+- Data Synchronization
+    - Local-first storage ensuring full offline capability.
+    - Optional synchronization using a REST API built with Ktor for multi-device support.
+
+## Architectural Principles
+
+The project follows Hexagonal Architecture and Domain-Driven Design principles. We prioritize semantic typing, rich domain models, and a strict separation between business logic and technical infrastructure. For a comprehensive explanation of our approach, please refer to the [Architecture](ARCHITECTURE.md) file.
 
 ## Project Status
 
-The project is actively under development. Progress and roadmap updates are available on [our project board](https://github.com/orgs/cadentos/projects/7).
+The project is currently in the early stages of active development. You can track our progress and upcoming features on our project board: https://github.com/orgs/cadentos/projects/7
 
 ## Contributing
 
-We welcome contributions from the community. Please see [CONTRIBUTING.md](./CONTRIBUTING.md) for guidelines on how to contribute to this project, including the Developer Certificate of Origin (DCO) requirements, code standards, and the contribution workflow.
+We welcome community contributions that align with our architectural vision and code standards. Please review [Contributing](CONTRIBUTING.md) for detailed guidelines on how to participate in the project.
 
 ## Code of Conduct
 
-This project adheres to a [Code of Conduct](./CODE_OF_CONDUCT.md). By participating, you agree to uphold the standards described therein.
+All participants are expected to uphold the standards of our community as defined in the [Code of Conduct](CODE_OF_CONDUCT.md) file.
 
 ## License
 
-This project is licensed under the MIT License. See the [LICENSE](./LICENSE) file for details.
+This project is licensed under the MIT License. See the [License](LICENSE) file for more details.
