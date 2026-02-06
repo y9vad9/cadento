@@ -5,8 +5,8 @@ import cadento.timers.domain.TimerStateTransition
 import kotlin.time.Instant
 
 sealed interface FocusDividendTimerState : TimerState {
-    val startTime: Instant
-    val endTime: Instant?
+    override val startTime: Instant
+    override val endTime: Instant?
 
     data class Earning(
         override val startTime: Instant,

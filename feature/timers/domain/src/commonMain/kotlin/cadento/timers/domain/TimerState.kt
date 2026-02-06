@@ -1,4 +1,9 @@
 package cadento.timers.domain
 
-sealed interface TimerState
+import kotlin.time.Instant
+
+sealed interface TimerState {
+    val startTime: Instant
+    val endTime: Instant?
+}
 

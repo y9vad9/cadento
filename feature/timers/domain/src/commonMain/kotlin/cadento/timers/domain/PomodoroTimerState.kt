@@ -6,8 +6,8 @@ import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Instant
 
 sealed interface PomodoroTimerState : TimerState {
-    val startTime: Instant
-    val endTime: Instant
+    override val startTime: Instant
+    override val endTime: Instant
 
     data class Inactive(
         override val startTime: Instant,
