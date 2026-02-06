@@ -1,5 +1,6 @@
 package cadento.timers.domain
 
+import cadento.timers.domain.Timer
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 

@@ -8,4 +8,7 @@ sealed interface Timer {
     val creationTime: Instant
     val state: TimerState
     val linkedTask: LinkedTimerTask?
+
+    fun linkTask(task: LinkedTimerTask): Timer
+    fun unlinkTask(): Timer
 }

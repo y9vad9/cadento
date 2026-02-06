@@ -1,6 +1,7 @@
 package cadento.timers.domain.unittest
 
 import cadento.timers.domain.FocusDividendTimer
+import cadento.timers.domain.FocusDividendTimerSettings
 import cadento.timers.domain.FocusDividendTimerState
 import cadento.timers.domain.LinkedTaskId
 import cadento.timers.domain.LinkedTaskName
@@ -12,6 +13,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Instant
+import kotlin.uuid.Uuid
 
 class FocusDividendTimerTest {
     private val initialTime = Instant.fromEpochMilliseconds(0)
@@ -72,17 +74,18 @@ class FocusDividendTimerTest {
         state: FocusDividendTimerState = FocusDividendTimerState.Earning(initialTime, null),
     ): FocusDividendTimer {
         return FocusDividendTimer(
-            id = TimerId.createOrThrow(1),
+            id = TimerId(Uuid.random()),
             name = TimerName.createOrThrow("Focus Dividend Timer"),
             creationTime = initialTime,
             state = state,
             linkedTask = null,
+            settings = FocusDividendTimerSettings(),
         )
     }
 
     private fun createTask(): LinkedTimerTask {
         return LinkedTimerTask(
-            id = LinkedTaskId.createOrThrow(1),
+            id = LinkedTaskId(Uuid.random()),
             name = LinkedTaskName.createOrThrow("Test Task"),
             creationTime = initialTime,
             dueTime = initialTime + 30.minutes

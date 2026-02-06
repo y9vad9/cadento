@@ -1,5 +1,9 @@
 package cadento.timers.domain
 
+import cadento.timers.domain.LinkedTimerTask
+import cadento.timers.domain.Timer
+import cadento.timers.domain.TimerId
+import cadento.timers.domain.TimerName
 import kotlin.time.Instant
 
 /**
@@ -50,7 +54,7 @@ data class PomodoroTimer(
      * @param task The task to associate with this timer.
      * @return A new [PomodoroTimer] instance with the updated task link.
      */
-    fun linkTask(task: LinkedTimerTask): PomodoroTimer {
+    override fun linkTask(task: LinkedTimerTask): PomodoroTimer {
         return copy(linkedTask = task)
     }
 
@@ -61,7 +65,7 @@ data class PomodoroTimer(
      * @return A new [PomodoroTimer] instance with the task unlinked.
      */
     @Throws(IllegalArgumentException::class)
-    fun unlinkTask(): PomodoroTimer {
+    override fun unlinkTask(): PomodoroTimer {
         require(linkedTask != null) { "Timer has no linked task" }
         return copy(linkedTask = null)
     }

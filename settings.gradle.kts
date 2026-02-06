@@ -35,6 +35,7 @@ include(
 
 include(
     ":feature:timers:domain",
+    ":feature:timers:application",
     ":feature:timers:integration",
     ":feature:timers:integration:database",
     ":feature:timers:presentation",

@@ -1,5 +1,9 @@
 package cadento.timers.domain
 
+import cadento.timers.domain.LinkedTimerTask
+import cadento.timers.domain.Timer
+import cadento.timers.domain.TimerId
+import cadento.timers.domain.TimerName
 import kotlin.time.Instant
 
 /**
@@ -48,7 +52,7 @@ data class RegularTimer(
      * @param task The task to associate with this timer.
      * @return A new instance of [RegularTimer] with the task linked.
      */
-    fun linkTask(task: LinkedTimerTask): RegularTimer {
+    override fun linkTask(task: LinkedTimerTask): RegularTimer {
         return copy(linkedTask = task)
     }
 
@@ -59,7 +63,7 @@ data class RegularTimer(
      * @return A new instance of [RegularTimer] with [linkedTask] set to `null`.
      */
     @Throws(IllegalArgumentException::class)
-    fun unlinkTask(): RegularTimer {
+    override fun unlinkTask(): RegularTimer {
         require(linkedTask != null) { "Timer has no linked task" }
         return copy(linkedTask = null)
     }
