@@ -1,0 +1,11 @@
+# Gemini Code Assist Configuration
+
+review:
+  ignore:
+    - "**/build/**"
+    - "**/.gradle/**"
+    - "**/.idea/**"
+    - "**/generated/**"
+    - "gradlew"
+    - "gradlew.bat"
+    - "local.properties"
