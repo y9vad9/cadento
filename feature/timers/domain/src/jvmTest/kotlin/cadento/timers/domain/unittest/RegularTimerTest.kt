@@ -13,6 +13,7 @@ import kotlin.test.assertFailsWith
 import kotlin.test.assertNull
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Instant
+import kotlin.uuid.Uuid
 
 class RegularTimerTest {
     private val initialTime = Instant.fromEpochMilliseconds(0)
@@ -73,7 +74,7 @@ class RegularTimerTest {
         state: RegularTimerState = RegularTimerState.Inactive(initialTime, null),
     ): RegularTimer {
         return RegularTimer(
-            id = TimerId.createOrThrow(1),
+            id = TimerId(Uuid.random()),
             name = TimerName.createOrThrow("Regular Timer"),
             creationTime = initialTime,
             state = state,
@@ -83,7 +84,7 @@ class RegularTimerTest {
 
     private fun createTask(): LinkedTimerTask {
         return LinkedTimerTask(
-            id = LinkedTaskId.createOrThrow(1),
+            id = LinkedTaskId(Uuid.random()),
             name = LinkedTaskName.createOrThrow("Test Task"),
             creationTime = initialTime,
             dueTime = initialTime + 30.minutes,

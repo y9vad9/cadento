@@ -3,82 +3,20 @@ package cadento.timers.domain.unittest
 import cadento.timers.domain.LinkedTaskId
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertFailsWith
-import kotlin.test.assertIs
+import kotlin.uuid.Uuid
 
 class LinkedTaskIdTest {
 
     @Test
-    fun `create returns Success for valid positive ID`() {
+    fun `value property should return value passed to constructor`() {
         // GIVEN
-        val id = 1L
+        val uuid = Uuid.random()
+        val taskId = LinkedTaskId(uuid)
 
         // WHEN
-        val result = LinkedTaskId.create(id)
+        val result = taskId.value
 
         // THEN
-        assertIs<LinkedTaskId.CreationResult.Success>(result)
-        assertEquals(id, result.linkedTaskId.long)
-    }
-
-    @Test
-    fun `create returns Success for zero ID`() {
-        // GIVEN
-        val id = 0L
-
-        // WHEN
-        val result = LinkedTaskId.create(id)
-
-        // THEN
-        assertIs<LinkedTaskId.CreationResult.Success>(result)
-        assertEquals(id, result.linkedTaskId.long)
-    }
-
-    @Test
-    fun `create returns Negative for negative ID`() {
-        // GIVEN
-        val id = -1L
-
-        // WHEN
-        val result = LinkedTaskId.create(id)
-
-        // THEN
-        assertIs<LinkedTaskId.CreationResult.Negative>(result)
-    }
-
-    @Test
-    fun `createOrThrow returns LinkedTaskId for valid ID`() {
-        // GIVEN
-        val id = 100L
-
-        // WHEN
-        val linkedTaskId = LinkedTaskId.createOrThrow(id)
-
-        // THEN
-        assertEquals(id, linkedTaskId.long)
-    }
-
-    @Test
-    fun `createOrThrow throws IllegalArgumentException for negative ID`() {
-        // GIVEN
-        val id = -5L
-
-        // WHEN / THEN
-        assertFailsWith<IllegalArgumentException> {
-            LinkedTaskId.createOrThrow(id)
-        }
-    }
-
-    @Test
-    fun `long property should return value passed to constructor`() {
-        // GIVEN
-        val idValue = 456L
-        val linkedTaskId = LinkedTaskId.createOrThrow(idValue)
-
-        // WHEN
-        val result = linkedTaskId.long
-
-        // THEN
-        assertEquals(idValue, result)
+        assertEquals(uuid, result)
     }
 }

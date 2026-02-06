@@ -1,5 +1,7 @@
 package cadento.timers.domain
 
+import cadento.timers.domain.TimerState
+import cadento.timers.domain.TimerStateTransition
 import kotlin.time.Instant
 
 sealed interface RegularTimerState : TimerState {

@@ -21,6 +21,7 @@ import kotlin.test.assertNull
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.Instant
+import kotlin.uuid.Uuid
 
 class PomodoroTimerTest {
     private val initialTime = Instant.fromEpochMilliseconds(0)
@@ -83,7 +84,7 @@ class PomodoroTimerTest {
         settings: PomodoroTimerSettings = defaultSettings(),
     ): PomodoroTimer {
         return PomodoroTimer(
-            id = TimerId.createOrThrow(1),
+            id = TimerId(Uuid.random()),
             name = TimerName.createOrThrow("Test Timer"),
             creationTime = initialTime,
             state = state,
@@ -94,7 +95,7 @@ class PomodoroTimerTest {
 
     private fun createTask(): LinkedTimerTask {
         return LinkedTimerTask(
-            id = LinkedTaskId.createOrThrow(1),
+            id = LinkedTaskId(Uuid.random()),
             name = LinkedTaskName.createOrThrow("Test Task"),
             creationTime = initialTime,
             dueTime = initialTime + 30.minutes,
