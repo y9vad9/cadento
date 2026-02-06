@@ -1,0 +1,83 @@
+CREATE TABLE IF NOT EXISTS PersistedTimer (
+  id            BLOB PRIMARY KEY,
+  name          TEXT NOT NULL,
+  type          TEXT NOT NULL, -- POMODORO, REGULAR, FOCUS_DIVIDEND
+  createdAt     TEXT NOT NULL,
+  
+  -- Linked task
+  linkedTaskId           BLOB,
+  linkedTaskName         TEXT,
+  linkedTaskCreationTime TEXT,
+  linkedTaskDueTime      TEXT,
+  
+  -- Current state
+  stateType      TEXT NOT NULL,
+  stateStartTime TEXT NOT NULL,
+  stateEndTime   TEXT,
+  
+  -- Pomodoro settings
+  pomodoroFocusDuration       INTEGER,
+  pomodoroShortBreakDuration   INTEGER,
+  pomodoroLongBreakDuration    INTEGER,
+  pomodoroLongBreakPer         INTEGER,
+  pomodoroIsLongBreakEnabled   INTEGER, -- boolean
+  pomodoroIsPreparationEnabled INTEGER, -- boolean
+  pomodoroPreparationDuration  INTEGER,
+  pomodoroRequiresConfirmation INTEGER, -- boolean
+  pomodoroConfirmationTimeout  INTEGER,
+  
+  -- Focus Dividend settings
+  focusDividendCoefficient REAL,
+  focusDividendBalance     INTEGER -- Duration in milliseconds
+);
+
+insertTimer:
+INSERT INTO PersistedTimer(
+  id, name, type, createdAt,
+  linkedTaskId, linkedTaskName, linkedTaskCreationTime, linkedTaskDueTime,
+  stateType, stateStartTime, stateEndTime,
+  pomodoroFocusDuration, pomodoroShortBreakDuration, pomodoroLongBreakDuration,
+  pomodoroLongBreakPer, pomodoroIsLongBreakEnabled, pomodoroIsPreparationEnabled,
+  pomodoroPreparationDuration, pomodoroRequiresConfirmation, pomodoroConfirmationTimeout,
+  focusDividendCoefficient, focusDividendBalance
+) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+
+updateTimer:
+UPDATE PersistedTimer
+SET
+  name = :name,
+  linkedTaskId = :linkedTaskId,
+  linkedTaskName = :linkedTaskName,
+  linkedTaskCreationTime = :linkedTaskCreationTime,
+  linkedTaskDueTime = :linkedTaskDueTime,
+  stateType = :stateType,
+  stateStartTime = :stateStartTime,
+  stateEndTime = :stateEndTime,
+  pomodoroFocusDuration = :pomodoroFocusDuration,
+  pomodoroShortBreakDuration = :pomodoroShortBreakDuration,
+  pomodoroLongBreakDuration = :pomodoroLongBreakDuration,
+  pomodoroLongBreakPer = :pomodoroLongBreakPer,
+  pomodoroIsLongBreakEnabled = :pomodoroIsLongBreakEnabled,
+  pomodoroIsPreparationEnabled = :pomodoroIsPreparationEnabled,
+  pomodoroPreparationDuration = :pomodoroPreparationDuration,
+  pomodoroRequiresConfirmation = :pomodoroRequiresConfirmation,
+  pomodoroConfirmationTimeout = :pomodoroConfirmationTimeout,
+  focusDividendCoefficient = :focusDividendCoefficient,
+  focusDividendBalance = :focusDividendBalance
+WHERE id = :id;
+
+deleteTimerById:
+DELETE FROM PersistedTimer WHERE id = :id RETURNING id;
+
+selectTimerById:
+SELECT * FROM PersistedTimer WHERE id = :id;
+
+selectAllTimers:
+SELECT * FROM PersistedTimer;
+
+selectTimersFiltered:
+SELECT * FROM PersistedTimer
+WHERE (:nameContains IS NULL OR name LIKE ('%' || :nameContains || '%'))
+ORDER BY
+    CASE WHEN :sort = 'BY_CREATION_DESC' THEN createdAt END DESC,
+    CASE WHEN :sort = 'BY_NAME_ASC'      THEN name END ASC;
