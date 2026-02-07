@@ -5,7 +5,5 @@ plugins {
 }
 
 dependencies {
-    commonMainApi(libs.compose.ui)
-    commonMainApi(libs.compose.foundation)
-    commonMainApi(libs.kotlinx.datetime)
+    commonMainImplementation(projects.uiKit)
 }

@@ -17,7 +17,7 @@ koin-annotations = "2.1.0"
 ksp = "2.3.4"
 decompose = "3.4.0"
 kotlinx-datetime = "0.7.1"
-compose-markdown = "0.39.0"
+compose-markdown = "0.39.2"
 androidx-appcompat = "1.7.1"
 okio = "3.16.2"
 essenty = "2.5.0"
@@ -29,6 +29,7 @@ h2-database = "2.4.240"
 accompanist = "0.32.0"
 androidx-performance-annotation = "1.0.0-alpha01"
 turbine = "1.2.1"
+compose-cupertino = "0.1.0-alpha04"
 
 [libraries]
 # ───────────────────────────────────────────────────────────────────────────────
@@ -75,6 +76,10 @@ compose-ui = { module = "org.jetbrains.compose.ui:ui", version.ref = "compose" }
 compose-preview = { module = "org.jetbrains.compose.ui:ui-tooling-preview", version.ref = "compose" }
 compose-foundation = { module = "org.jetbrains.compose.foundation:foundation", version.ref = "compose" }
 compose-material3 = { module = "org.jetbrains.compose.material3:material3", version.ref = "compose-material3" }
+compose-markdown = { module = "com.mikepenz:multiplatform-markdown-renderer", version.ref = "compose-markdown" }
+compose-markdown-m3 = { module = "com.mikepenz:multiplatform-markdown-renderer-m3", version.ref = "compose-markdown" }
+compose-markdown-coil3 = { module = "com.mikepenz:multiplatform-markdown-renderer-coil3", version.ref = "compose-markdown" }
+compose-cupertino = { module = "io.github.alexzhirkevich:cupertino", version.ref = "compose-cupertino" }
 
 # ───────────────────────────────────────────────────────────────────────────────
 # Accompanist
@@ -111,13 +116,6 @@ flowmvi-savedstate = { module = "pro.respawn.flowmvi:savedstate", version.ref = 
 flowmvi-debugger-client = { module = "pro.respawn.flowmvi:debugger-plugin", version.ref = "flowmvi" }
 flowmvi-essenty = { module = "pro.respawn.flowmvi:essenty", version.ref = "flowmvi" }
 flowmvi-essenty-compose = { module = "pro.respawn.flowmvi:essenty-compose", version.ref = "flowmvi" }
-
-# ───────────────────────────────────────────────────────────────────────────────
-# Markdown Renderer
-# ───────────────────────────────────────────────────────────────────────────────
-compose-markdown = { module = "com.mikepenz:multiplatform-markdown-renderer", version.ref = "compose-markdown" }
-compose-markdown-m3 = { module = "com.mikepenz:multiplatform-markdown-renderer-m3", version.ref = "compose-markdown" }
-compose-markdown-coil3 = { module = "com.mikepenz:multiplatform-markdown-renderer-coil3", version.ref = "compose-markdown" }
 
 # ───────────────────────────────────────────────────────────────────────────────
 # CLI Utilities
