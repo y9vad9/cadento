@@ -4,14 +4,25 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.LocalContentColor as M3LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import cadento.uikit.LocalContentColor
 import cadento.uikit.component.ButtonSize
 import cadento.uikit.component.ButtonStyle
 import cadento.uikit.component.ButtonVariant
 import androidx.compose.material3.Button as M3Button
+
+private val ButtonHeightSmall = 32.dp
+private val ButtonWidthSmall = 96.dp
+private val ButtonHeightMedium = 40.dp
+private val ButtonWidthMedium = 128.dp
+private val ButtonHeightLarge = 48.dp
+private val ButtonWidthLarge = 160.dp
+private val ButtonArrangementSpacing = 8.dp
 
 /**
  * Material3 implementation of [ButtonStyle] for
@@ -30,26 +41,27 @@ public class Material3ButtonStyle : ButtonStyle {
         trailingIcon: (@Composable (() -> Unit))?,
         content: @Composable () -> Unit
     ) {
-        val colors = when (variant) {
-            ButtonVariant.Primary -> ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.primary,
-                contentColor = MaterialTheme.colorScheme.onPrimary
-            )
-            ButtonVariant.Secondary -> ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.secondary,
-                contentColor = MaterialTheme.colorScheme.onSecondary
-            )
-            ButtonVariant.Danger -> ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.error,
-                contentColor = MaterialTheme.colorScheme.onError
-            )
+        val containerColor = when (variant) {
+            ButtonVariant.Primary -> MaterialTheme.colorScheme.primary
+            ButtonVariant.Secondary -> MaterialTheme.colorScheme.secondary
+            ButtonVariant.Danger -> MaterialTheme.colorScheme.error
         }
+        val contentColor = when (variant) {
+            ButtonVariant.Primary -> MaterialTheme.colorScheme.onPrimary
+            ButtonVariant.Secondary -> MaterialTheme.colorScheme.onSecondary
+            ButtonVariant.Danger -> MaterialTheme.colorScheme.onError
+        }
+
+        val colors = ButtonDefaults.buttonColors(
+            containerColor = containerColor,
+            contentColor = contentColor
+        )
 
         val buttonModifier = modifier.then(
             when (size) {
-                ButtonSize.Small -> Modifier.size(height = 32.dp, width = 96.dp)
-                ButtonSize.Medium -> Modifier.size(height = 40.dp, width = 128.dp)
-                ButtonSize.Large -> Modifier.size(height = 48.dp, width = 160.dp)
+                ButtonSize.Small -> Modifier.size(height = ButtonHeightSmall, width = ButtonWidthSmall)
+                ButtonSize.Medium -> Modifier.size(height = ButtonHeightMedium, width = ButtonWidthMedium)
+                ButtonSize.Large -> Modifier.size(height = ButtonHeightLarge, width = ButtonWidthLarge)
             }
         )
 
@@ -61,10 +73,15 @@ public class Material3ButtonStyle : ButtonStyle {
             elevation = ButtonDefaults.buttonElevation(),
             contentPadding = ButtonDefaults.ContentPadding
         ) {
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                if (leadingIcon != null) leadingIcon()
-                content()
-                if (trailingIcon != null) trailingIcon()
+            CompositionLocalProvider(
+                LocalContentColor provides contentColor,
+                M3LocalContentColor provides contentColor
+            ) {
+                Row(horizontalArrangement = Arrangement.spacedBy(ButtonArrangementSpacing)) {
+                    if (leadingIcon != null) leadingIcon()
+                    content()
+                    if (trailingIcon != null) trailingIcon()
+                }
             }
         }
     }

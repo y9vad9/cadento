@@ -148,20 +148,21 @@ public enum class ButtonSize {
 
 /**
  * Theme-specific rendering strategy for [Button].
+ * Implementations of this interface define the visual appearance of buttons for a specific design system.
  */
 public interface ButtonStyle {
 
     /**
      * Renders a button with the given parameters.
      *
-     * @param modifier Modifier to apply to the button
-     * @param enabled Whether the button is enabled
-     * @param variant The visual variant
-     * @param size The size of the button
-     * @param onClick Click callback
-     * @param leadingIcon Optional leading icon
-     * @param trailingIcon Optional trailing icon
-     * @param content Composable content
+     * @param modifier Modifier to be applied to the layout.
+     * @param enabled Controls the enabled state of the button.
+     * @param variant The visual emphasis/style of the button.
+     * @param size The physical size of the button.
+     * @param onClick Callback to be invoked when the button is clicked.
+     * @param leadingIcon Optional icon to be displayed before the content.
+     * @param trailingIcon Optional icon to be displayed after the content.
+     * @param content The primary content of the button (usually a label).
      */
     @Composable
     public fun render(
