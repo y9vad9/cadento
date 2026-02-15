@@ -22,81 +22,81 @@ import cadento.timers.application.regular.StopRegularTimerUseCase
 import cadento.timers.database.TimersDatabaseSource
 import cadento.timers.sqldelight.TimerDatabase
 import org.koin.core.annotation.Module
-import org.koin.core.annotation.Singleton
+import org.koin.core.annotation.Single
 import kotlin.time.Clock
 
 @Module
 @Suppress("detekt.TooManyFunctions")
 class TimerFeatureModule {
 
-    @Singleton
+    @Single
     fun createPomodoroTimerUseCase(repository: TimerRepository, clock: Clock, idProvider: TimerIdProvider) = 
         CreatePomodoroTimerUseCase(repository, clock, idProvider)
 
-    @Singleton
+    @Single
     fun getPomodoroTimerUseCase(repository: TimerRepository) = 
         GetPomodoroTimerUseCase(repository)
 
-    @Singleton
+    @Single
     fun startPomodoroTimerUseCase(repository: TimerRepository, clock: Clock) = 
         StartPomodoroTimerUseCase(repository, clock)
 
-    @Singleton
+    @Single
     fun stopPomodoroTimerUseCase(repository: TimerRepository, clock: Clock) = 
         StopPomodoroTimerUseCase(repository, clock)
 
-    @Singleton
+    @Single
     fun createRegularTimerUseCase(repository: TimerRepository, clock: Clock, idProvider: TimerIdProvider) = 
         CreateRegularTimerUseCase(repository, clock, idProvider)
 
-    @Singleton
+    @Single
     fun getRegularTimerUseCase(repository: TimerRepository) = 
         GetRegularTimerUseCase(repository)
 
-    @Singleton
+    @Single
     fun startRegularTimerUseCase(repository: TimerRepository, clock: Clock) = 
         StartRegularTimerUseCase(repository, clock)
 
-    @Singleton
+    @Single
     fun stopRegularTimerUseCase(repository: TimerRepository, clock: Clock) = 
         StopRegularTimerUseCase(repository, clock)
 
-    @Singleton
+    @Single
     fun createFocusDividendTimerUseCase(repository: TimerRepository, clock: Clock, idProvider: TimerIdProvider) = 
         CreateFocusDividendTimerUseCase(repository, clock, idProvider)
 
-    @Singleton
+    @Single
     fun getFocusDividendTimerUseCase(repository: TimerRepository) = 
         GetFocusDividendTimerUseCase(repository)
 
-    @Singleton
+    @Single
     fun startFocusDividendTimerUseCase(repository: TimerRepository, clock: Clock) = 
         StartFocusDividendTimerUseCase(repository, clock)
 
-    @Singleton
+    @Single
     fun stopFocusDividendTimerUseCase(repository: TimerRepository, clock: Clock) = 
         StopFocusDividendTimerUseCase(repository, clock)
 
-    @Singleton
+    @Single
     fun getTimersUseCase(repository: TimerRepository) = 
         GetTimersUseCase(repository)
 
-    @Singleton
+    @Single
     fun deleteTimerUseCase(repository: TimerRepository) = 
         DeleteTimerUseCase(repository)
 
-    @Singleton
+    @Single
     fun linkTaskToTimerUseCase(repository: TimerRepository) = 
         LinkTaskToTimerUseCase(repository)
 
-    @Singleton
+    @Single
     fun unlinkTaskFromTimerUseCase(repository: TimerRepository) = 
         UnlinkTaskFromTimerUseCase(repository)
 
-    @Singleton
+    @Single
     fun timerIdProvider(): TimerIdProvider = UuidTimerIdProvider()
 
-    @Singleton
+    @Single
     fun timerRepository(sqlDriver: SqlDriver): TimerRepository {
         return TimerRepositoryImpl(
             databaseSource = TimersDatabaseSource(

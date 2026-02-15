@@ -14,22 +14,22 @@ import cadento.tasks.database.SqlDelightTaskMapper
 import cadento.tasks.database.TasksDatabaseSource
 import cadento.tasks.sqldelight.TaskDatabase
 import org.koin.core.annotation.Module
-import org.koin.core.annotation.Singleton
+import org.koin.core.annotation.Single
 import kotlin.time.Clock
 
 @Module
 class TaskFeatureModule {
-    @Singleton
+    @Single
     fun createTaskUseCase(repository: TaskRepository): CreateTaskUseCase {
         return CreateTaskUseCase(repository)
     }
 
-    @Singleton
+    @Single
     fun editTaskUseCase(repository: TaskRepository): EditTaskUseCase {
         return EditTaskUseCase(repository)
     }
 
-    @Singleton
+    @Single
     fun getSoonDueTasksUseCase(
         repository: TaskRepository,
         timeZoneProvider: TimeZoneProvider,
@@ -38,7 +38,7 @@ class TaskFeatureModule {
         return GetSoonDueTasksUseCase(repository, timeZoneProvider, clock)
     }
 
-    @Singleton
+    @Single
     fun getTasksByTagAndStatusUseCase(
         repository: TaskRepository,
         clock: Clock,
@@ -46,17 +46,17 @@ class TaskFeatureModule {
         return GetTasksByTagAndStatusUseCase(repository, clock)
     }
 
-    @Singleton
+    @Single
     fun deleteTaskUseCase(repository: TaskRepository): DeleteTaskUseCase {
         return DeleteTaskUseCase(repository)
     }
 
-    @Singleton
+    @Single
     fun deleteTasksUseCase(repository: TaskRepository): DeleteTasksUseCase {
         return DeleteTasksUseCase(repository)
     }
 
-    @Singleton
+    @Single
     fun taskRepository(sqlDriver: SqlDriver): TaskRepository {
         return TaskRepositoryImpl(
             databaseSource = TasksDatabaseSource(
