@@ -27,7 +27,7 @@ The project follows Hexagonal Architecture and Domain-Driven Design principles. 
 
 ## Project Status
 
-The project is currently in the early stages of active development. You can track our progress and upcoming features on our project board: https://github.com/orgs/cadentos/projects/7
+The project is currently in the early stages of active development. You can track our progress and upcoming features on [our project board](https://github.com/users/y9vad9/projects/5).
 
 ## Contributing
 
