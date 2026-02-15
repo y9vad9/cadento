@@ -10,13 +10,120 @@ on:
   pull_request:
     branches:
       - main
+  issues:
+    types: [opened, edited]
 
 permissions:
   contents: read
+  pull-requests: write
+  issues: write
 
 jobs:
+  validate-issue-title:
+    name: Validate Issue Title
+    if: github.event_name == 'issues'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check Issue Title
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ISSUE_TITLE: ${{ github.event.issue.title }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+        run: |
+          # Regexp for technical prefixes like fix:, feat:, [Bug], etc. (case-insensitive)
+          TECHNICAL_PREFIX_REGEX="^([A-Za-z]+(\(.*\))?:|\[.*\])"
+          
+          if [[ "$ISSUE_TITLE" =~ $TECHNICAL_PREFIX_REGEX ]]; then
+            COMMENT="## ⚠️ Technical Prefix Detected\n\nIssue titles should be 'Humane' and readable by non-developers. Please remove technical prefixes like \`fix:\`, \`feat:\`, or bracketed tags like \`[Bug]\`.\n\n**Example:** \"Timer does not start after reset\" (Good) vs \"fix: timer state\" (Bad)."
+            
+            gh issue comment $ISSUE_NUMBER --body "$(echo -e "$COMMENT")"
+            echo "Technical prefix detected in issue title: $ISSUE_TITLE"
+            exit 1
+          fi
+
+  validate-conventions:
+    name: Validate Conventions
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Validate PR Title and Commits
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          BRANCH_NAME: ${{ github.head_ref }}
+        run: |
+          # Configuration
+          TYPES="feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert"
+          SCOPES="tasks|timers|ui-kit|foundation|core|app|build|deps|ci|docs"
+          # Allows multiple scopes like (deps,build) and multiple issues like [#123,#456]
+          REGEX="^($TYPES)\(($SCOPES)(,($SCOPES))*\): .+( \[#\d+(,#\d+)*\])?$"
+          # Branch regex: type/scope-subject
+          BRANCH_REGEX="^($TYPES)\/($SCOPES)-[a-z0-9-]+$"
+          
+          ERRORS=""
+
+          # 1. Validate Branch Name
+          if [[ ! "$BRANCH_NAME" =~ $BRANCH_REGEX ]]; then
+            # Ignore dependabot branches
+            if [[ ! "$BRANCH_NAME" =~ ^dependabot\/ ]]; then
+              ERRORS+="* Branch name \`$BRANCH_NAME\` does not match format \`type/scope-subject\`. Allowed scopes: $SCOPES.\n"
+            fi
+          fi
+
+          # 2. Validate PR Title
+          if [[ ! "$PR_TITLE" =~ $REGEX ]]; then
+            ERRORS+="* PR title does not match format \`type(scope): subject [#issue]\`. Allowed scopes: $SCOPES.\n"
+          fi
+          if [[ "$PR_TITLE" =~ \(#[0-9]+\)$ ]]; then
+            ERRORS+="* PR title should not contain the default GitHub PR number suffix \`(#$PR_NUMBER)\`.\n"
+          fi
+
+          # 2. Validate Commits (from PR start to HEAD)
+          # Get commit hashes and subjects, excluding merge commits
+          COMMIT_DATA=$(git log origin/${{ github.base_ref }}..HEAD --no-merges --format="%H|%s")
+          
+          while IFS='|' read -r hash subject; do
+            if [[ -n "$hash" ]]; then
+              # 2a. Validate format
+              if [[ ! "$subject" =~ $REGEX ]]; then
+                if [[ ! "$subject" =~ ^build\(deps\): ]]; then
+                   ERRORS+="* Commit subject \`$subject\` ($hash) does not match conventional commit format.\n"
+                fi
+              fi
+
+              # 2b. Validate Signed-off-by (check whole commit message)
+              if ! git log -1 --format=%B "$hash" | grep -q "^Signed-off-by: "; then
+                ERRORS+="* Commit \`$subject\` ($hash) is missing \`Signed-off-by\` (use \`git commit -s\`).\n"
+              fi
+
+              # 2c. Validate Signature via GitHub API (ensures it is a VERIFIED signature)
+              VERIFIED=$(gh api repos/${{ github.repository }}/commits/$hash --template '{{.commit.verification.verified}}')
+              if [[ "$VERIFIED" != "true" ]]; then
+                REASON=$(gh api repos/${{ github.repository }}/commits/$hash --template '{{.commit.verification.reason}}')
+                ERRORS+="* Commit \`$subject\` ($hash) is not a verified signature (Reason: $REASON). Ensure you use \`git commit -S\` and your key is registered on GitHub.\n"
+              fi
+            fi
+          done <<< "$COMMIT_DATA"
+
+          # 3. Handle Errors
+          if [[ -n "$ERRORS" ]]; then
+            COMMENT="## ⚠️ Convention Validation Failed\n\nYour PR title or commit messages do not follow the project's style guidelines:\n\n$ERRORS\n\nPlease refer to [CONTRIBUTING.md](https://github.com/${{ github.repository }}/blob/main/CONTRIBUTING.md) for details."
+            
+            # Post comment and fail
+            gh pr comment $PR_NUMBER --body "$(echo -e "$COMMENT")"
+            echo -e "Validation errors found:\n$ERRORS"
+            exit 1
+          fi
+
   compilation:
     name: Compilation
+    if: github.event_name != 'issues'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -42,6 +149,7 @@ jobs:
   linter:
     name: Linter
     needs: compilation
+    if: github.event_name != 'issues'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -62,6 +170,7 @@ jobs:
   jvm-tests:
     name: ${{ matrix.type }} Tests
     needs: compilation
+    if: github.event_name != 'issues'
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -86,6 +195,7 @@ jobs:
   coverage-and-verify:
     name: Coverage & Verification
     needs: jvm-tests
+    if: github.event_name != 'issues'
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -116,6 +226,7 @@ jobs:
 
   codeql-analysis:
     name: CodeQL Analysis
+    if: github.event_name != 'issues'
     runs-on: ubuntu-latest
     permissions:
       contents: read

@@ -1,6 +1,63 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# === Branch Naming Convention Validation ===
+echo "Verifying branch name..."
+
+CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+
+# Configuration matching ci.yml and CONTRIBUTING.md
+TYPES="feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert"
+SCOPES="tasks|timers|ui-kit|foundation|core|app|build|deps|ci|docs"
+# Branch regex: type/scope-subject
+BRANCH_REGEX="^($TYPES)\/($SCOPES)-[a-z0-9-]+$"
+
+if [[ "$CURRENT_BRANCH" != "main" && ! "$CURRENT_BRANCH" =~ ^dependabot\/ ]]; then
+    if [[ ! "$CURRENT_BRANCH" =~ $BRANCH_REGEX ]]; then
+        echo "❌ Error: Invalid branch name \"$CURRENT_BRANCH\"."
+        echo "Branch names must follow the format: type/scope-subject"
+        echo "Allowed types: $TYPES"
+        echo "Allowed scopes: $SCOPES"
+        echo "Example: feat/timers-pomodoro-logic"
+        echo "Please refer to CONTRIBUTING.md for details."
+        exit 1
+    fi
+fi
+
+echo "✅ Branch name validation passed."
+
+# === Cryptographic Signature Validation ===
+echo "Verifying commit signatures..."
+
+# Get the range of commits being pushed
+# In a pre-push hook, stdin receives lines like <local ref> <local sha1> <remote ref> <remote sha1>
+while read -r local_ref local_sha remote_ref remote_sha; do
+    if [[ "$remote_sha" == "0000000000000000000000000000000000000000" ]]; then
+        # New branch being pushed, check all commits relative to main
+        RANGE="origin/main..$local_sha"
+    else
+        RANGE="$remote_sha..$local_sha"
+    fi
+
+    # Check each commit in the range for a signature
+    # %G? returns 'G' for good, 'B' for bad, 'U' for untrusted, 'X' for expired, 'Y' for revoked, 'R' for unknown, 'N' for no signature
+    INVALID_COMMITS=$(git log "$RANGE" --format="%H %G?")
+    
+    while IFS= read -r line; do
+        if [[ -n "$line" ]]; then
+            hash=$(echo "$line" | cut -d' ' -f1)
+            sig_status=$(echo "$line" | cut -d' ' -f2)
+            
+            if [[ "$sig_status" != "G" && "$sig_status" != "U" ]]; then
+                echo "❌ Error: Commit $hash is not cryptographically signed (use \`git commit -S\`)."
+                exit 1
+            fi
+        fi
+    done <<< "$INVALID_COMMITS"
+done
+
+echo "✅ All commits are properly signed."
+
 # === Gradle tests ===
 echo "Running Gradle checks..."
 if ! ./gradlew check; then

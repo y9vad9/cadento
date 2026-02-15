@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# === Conventional Commits Validation ===
+
+COMMIT_MSG_FILE=$1
+# We only validate the first line (the subject) of the commit message
+SUBJECT=$(head -n 1 "$COMMIT_MSG_FILE")
+
+# Configuration matching ci.yml and CONTRIBUTING.md
+TYPES="feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert"
+SCOPES="tasks|timers|ui-kit|foundation|core|app|build|deps|ci|docs"
+
+# Allows multiple scopes like (deps,build) and multiple issues like [#123,#456]
+# Regex explained:
+# ^($TYPES)           -> Starts with one of the allowed types
+# \(($SCOPES)(,($SCOPES))*\) -> Followed by one or more allowed scopes in parentheses, separated by commas (no spaces)
+# : .+$               -> Followed by a colon, a space, and at least one character
+# ( \[#\d+(,#\d+)*\])?$ -> Ends with optional space and one or more issue numbers in brackets, separated by commas (no spaces)
+REGEX="^($TYPES)\(($SCOPES)(,($SCOPES))*\): .+( \[#\d+(,#\d+)*\])?$"
+
+if [[ ! "$SUBJECT" =~ $REGEX ]]; then
+  echo
+  echo "❌ Error: Invalid commit message format."
+  echo "Current subject: \"$SUBJECT\""
+  echo
+  echo "Expected format: type(scope1,scope2): subject [#issue1,#issue2]"
+  echo "Allowed types: $TYPES"
+  echo "Allowed scopes: $SCOPES"
+  echo "Example: chore(deps,build): update dependencies and gradle version [#202,#203]"
+  echo "Please refer to CONTRIBUTING.md for details."
+  exit 1
+fi
+
+# === Signed-off-by Validation ===
+if ! grep -q "^Signed-off-by: " "$COMMIT_MSG_FILE"; then
+  echo
+  echo "❌ Error: Commit message must be signed off (use \`git commit -s\`)."
+  echo "The message must contain a \`Signed-off-by: Name <email>\` line."
+  exit 1
+fi
+
+echo "✅ Commit message format and sign-off validation passed."

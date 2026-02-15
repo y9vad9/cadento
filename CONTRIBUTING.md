@@ -1,101 +1,94 @@
-# Contributing
+# Contributing Guidelines
 
-This project adheres to the Developer Certificate of Origin (DCO). By contributing to this repository, you certify that your contributions comply with the DCO.
+Thank you for your interest in Cadento! To maintain high code quality and a clear project history, please follow these Git and GitHub conventions.
 
-## What is the DCO?
+## 1. Standardized Commits
 
-The DCO is a simple statement that contributors make to certify the origin of their code. It ensures that:
+We use [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) (`type(scope): subject`).
 
-* The contributor wrote the code or has the right to submit it under the project’s license.
-* The contribution complies with the project’s licensing and contribution guidelines.
+### Standardized Commit Requirements
+- **Format**: `type(scope): subject [#issue]`
+- **Sign-off**: Every commit must be signed off (use `git commit -s`). This adds a `Signed-off-by: Name <email>` line to the message.
+- **Cryptographic Signing**: Every commit must be GPG/SSH signed (use `git commit -S`).
 
-### How to Sign Off Commits
+### Allowed Scopes
+Scopes must be one or more of the following enums (separated by commas if multiple, no spaces):
+- `tasks`: Task domain logic, infrastructure, or UI.
+- `timers`: Timer domain logic, infrastructure, or UI.
+- `ui-kit`: Common UI components and design system implementations.
+- `foundation`: Foundational utilities (coroutines, time extensions).
+- `core`: System-wide logic or global configurations.
+- `app`: Main application entry points and orchestration.
+- `build`: Gradle build scripts, conventions, and plugin changes.
+- `deps`: Dependency updates (including dependabot).
+- `ci`: GitHub Actions and CI/CD pipelines.
+- `docs`: Documentation updates.
 
-Each commit must contain a sign-off line. This is done by adding the following line to the end of the commit message:
+**Note:** While multiple scopes (e.g., `chore(deps,build): ...`) and multiple issue references (e.g., `[#123,#456]`) are supported, we strongly recommend keeping PRs localized to a single scope or issue whenever possible.
 
-```
-Signed-off-by: Your Name [your.email@example.com](mailto:your.email@example.com)
-```
+### Examples
+- `feat(timers): implement pomodoro countdown logic`
+- `fix(ui-kit): resolve button text visibility in dark mode`
+- `chore(deps,build): update dependencies and gradle version [#202,#203]`
 
-You can sign off using the -s or --signoff flag with git commit:
+---
 
-```bash
-git commit -s -m "Your commit message"
-```
+## 2. Pull Request (PR) Conventions
 
-### Web-based Commits
+### Title Format
+PR titles must follow the commit format exactly, with optional issue references.
+**Format:** `<type>(<scope>): <subject> [#issue-number,#issue-number]`
 
-If you contribute via GitHub’s web interface, ensure that you check the box to sign off on the commit when submitting your change.
+- **Good:** `feat(tasks): add drag-and-drop support [#123]`
+- **Bad:** `feat(tasks): add drag-and-drop support (#456)`
 
-## Why This Matters
+### Description Requirements
+Every PR description must contain:
+- **Summary**: A brief overview of the changes.
+- **Related Issue**: Link using keywords (e.g., `Closes #123`).
+- **Checklist**: Ensure local tests pass and conventions are followed.
 
-Using the DCO helps protect all contributors and maintainers by ensuring that the source of the code is known and accepted. It provides legal clarity and helps build a transparent and trustworthy development process.
+---
 
-## Enforcement
+## 3. Branch Naming Conventions
 
-Pull requests that do not include properly signed-off commits will not be merged. You will be asked to amend your commits to include the required sign-off.
+Branch names must follow a structured format similar to commits.
 
-## Workflow and Best Practices
+**Format:** `<type>/<scope>-<subject>`
 
-To maintain a clean and efficient development process, please follow these guidelines:
+- **Allowed Types**: Same as commits (`feat`, `fix`, `docs`, etc.).
+- **Allowed Scopes**: Same as commits (`tasks`, `timers`, `ui-kit`, etc.).
+- **Constraints**:
+    - Use lowercase alphanumeric characters and hyphens (`-`) only.
+    - No spaces or underscores (`_`) allowed.
+    - The subject should be a short, kebab-case description of the task.
 
-### Branch Naming Rules
+### Examples
+- `feat/timers-pomodoro-logic`
+- `fix/ui-kit-button-visibility`
+- `docs/foundation-readme-update`
 
-All branches must follow this strict naming format to ensure clarity and consistency across contributions:
+---
 
-%type%/%issue-number%-%scope%-%short-description%
+## 4. Issue Conventions
 
-Accepted `%type%` values:
+### Humane Titles
+Issue titles must be human-readable and descriptive for non-developers. Do **not** use technical prefixes or bracketed tags.
 
-* feature — for new features.
-* bugfix — for fixing a bug.
-* hotfix — for urgent fixes to main.
-* chore — for non-functional changes (e.g., formatting, dependency bumps).
-* docs — for changes to documentation only.
-* refactor — for code restructuring without behavior change.
-* test — for adding or changing tests.
+- **Good:** "Start button is disabled after timer finishes"
+- **Bad:** `fix: timer button disabled`, `[Bug] button state`
 
-`%scope%`:
+### Categorization via Labels
+Technical categorization is handled strictly through GitHub Labels. Ensure every issue is tagged with:
+- `type:*`: (e.g., `type:bug`, `type:feature`, `type:documentation`)
+- `priority:*`: (e.g., `priority:high`, `priority:medium`)
+- `scope:*`: (e.g., `scope:tasks`, `scope:build`, `scope:deps`)
 
-* Should refer to a specific business area or module (e.g., task, timer, auth).
-* Avoid generic scopes that do not represent a clear domain boundary.
-* Use lowercase, hyphenated words.
-
-`%short-description%`:
-
-* Concise description using lowercase, hyphenated words.
-* Avoid filler words like “add” or “implement” — the type already implies intent.
-
-Branches that do not follow this format may be rejected or renamed.
-
-### Starting Work on Features or Fixes
-
-* Before starting significant work, open a discussion issue to propose the feature or report the bug. This helps avoid duplicate efforts and aligns development with project goals.
-* Smaller fixes or improvements may be submitted directly as pull requests, but discussion is encouraged if the change is substantial.
-
-### Pull Requests
-
-* Each pull request should focus on a single logical change.
-* Include clear, descriptive titles and detailed descriptions of the changes and their purpose.
-* Reference related issues or discussions when applicable.
-* Ensure your code passes all tests and follows the project's coding standards.
-* Keep pull requests up to date with the target branch.
-
-### Code Style and Quality
-
-* Follow the established coding conventions and best practices. We use default Detekt ruleset to enforce best practices.
-* Write meaningful commit messages. Use this guide for that: https://www.baeldung.com/ops/git-commit-messages.
-* Ensure tests cover new features or bug fixes.
-* Run linters and static analysis tools before submitting changes.
-
-### Documentation
-
-* Update documentation ([README](README.md), [Architecture](ARCHITECTURE.md), etc.) when your changes affect usage, architecture, or project behavior. Note: such changes should be discussed prior to modifying.
-* Reference documentation issues or requests in your pull request.
-
-### Additional Resources
-
-* Review the [Architecture](ARCHITECTURE.md) file to understand the project’s architecture and design principles.
-* Follow the [Code of Conduct](CODE_OF_CONDUCT.md) to maintain a respectful and collaborative community.
-
-Thank you for contributing! Your efforts help improve the project for everyone.
+### Status Tracking
+Use `status:*` labels to track the lifecycle:
+- `status:triage`: Needs review.
+- `status:blocked`: Waiting on external factors.
+- `status:in-progress`: Actively being worked on.
+- `status:duplicate`: This issue or pull request already exists.
+- `status:wontfix`: This will not be worked on.
+- `status:invalid`: Doesn’t meet guidelines or incomplete.
